@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MechanismBench — Manual Review</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header>
+  <div class="brand">MechanismBench · Manual Review</div>
+  <div class="who">
+    <label>Reviewer ID
+      <input id="reviewerId" type="text" placeholder="your-name" autocomplete="off" />
+    </label>
+  </div>
+</header>
+
+<div id="setup" class="panel">
+  <h1>Pick a review queue</h1>
+  <p class="muted">
+    Your decisions are saved in <b>this browser only</b> (localStorage) as you go —
+    close and resume anytime. When done, click <b>Export CSV</b> and send the file
+    back to be merged. Nothing is uploaded automatically.
+  </p>
+  <div id="queueList" class="queue-list"></div>
+</div>
+
+<div id="review" class="panel hidden">
+  <div class="review-top">
+    <button id="backBtn" class="ghost">&larr; Queues</button>
+    <div class="qmeta">
+      <span id="qTitle" class="qtitle"></span>
+      <span id="progress" class="progress"></span>
+    </div>
+    <div class="review-actions">
+      <button id="exportBtn" class="primary">Export CSV</button>
+    </div>
+  </div>
+  <div id="banner" class="banner"></div>
+
+  <div class="card" id="card">
+    <div class="card-head">
+      <span id="unitId" class="unit-id"></span>
+      <span id="doneTag" class="done-tag hidden">saved</span>
+    </div>
+    <div id="question" class="question"></div>
+    <table id="evidence" class="evidence"></table>
+    <div id="decisionForm" class="decision-form"></div>
+    <div class="nav">
+      <button id="prevBtn" class="ghost">&larr; Prev</button>
+      <button id="skipBtn" class="ghost">Skip</button>
+      <button id="saveNextBtn" class="primary">Save &amp; Next &rarr;</button>
+    </div>
+  </div>
+
+  <div class="jump">
+    <label>Jump to #<input id="jumpTo" type="number" min="1" /></label>
+    <label class="filterOnly"><input id="onlyUndone" type="checkbox" /> only unreviewed</label>
+  </div>
+</div>
+
+<footer class="muted">
+  candidate ≠ eligible · decisions here are authoritative human fields · assistant fields are guidance only
+</footer>
+
+<script src="queues.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
