@@ -1,57 +1,61 @@
-# MechanismBench — Manual Review Site
+# MechanismBench manual-review guide
 
-A self-contained static website for group members to help audit the benchmark's
-human-review queues. **No install, no server, no upload** — open the file, review,
-export a CSV, send it back.
+This website records **human decisions only**. It does not upload them, merge
+them, or change any frozen release.
 
-## For reviewers (how to use)
+## Reviewer workflow
 
-1. Open **`index.html`** in any browser (double-click, or drag it into a tab).
-2. Type your **Reviewer ID** (your name) at the top right.
-3. Pick a queue. You'll see one unit at a time: its evidence on top, your decision
-   controls below.
-4. Make the call, add a short reason, click **Save & Next**. Your progress is saved
-   in *this browser* automatically — you can close the tab and resume later.
-5. When done (or partway), click **Export CSV**. Send that file back to the maintainer.
+1. Enter a recognizable **Reviewer ID**.
+2. Choose one queue and review units in order (or enable *only unreviewed*).
+3. Inspect the evidence table before making any call.
+4. Complete every required decision and write a concrete reason. A reason should
+   say which evidence you checked, not merely “OK”.
+5. Use **Save & Next** only when the decision is complete. Use **Skip** to leave
+   a difficult item for later.
+6. Export the CSV after a work session or when the queue is complete. Keep the
+   filename unchanged if possible.
 
-Tips: use **only unreviewed** to hide finished units; **Jump to #** to go to a
-specific position; **Skip** to pass without saving.
+Progress is stored only in that browser's `localStorage`. Clearing site data or
+using another computer creates a separate local store.
 
-## Queues
+## Current queues
 
-| Queue | N | What you're deciding |
-|-------|---|----------------------|
-| Layer-1 GOLD primary audit | 640 | Does the evidence support the derived mechanism label? |
-| Launch-critical 50 | 50 | Accept/reject each Layer-2/3 gating row |
-| Layer 2 — G4 candidates | 22 | Is this a Layer-2-eligible counterfactual? |
-| Layer 3 — NKX2-1 candidates | 28 | Is the mechanism stable across contexts? |
-| **NEW: coactivator-dependent** | 120 | Is this target BRD4-dependent? (candidate 3rd class) |
+| Queue | N | Primary question |
+|---|---:|---|
+| `gold_primary` | 640 | Does the evidence support the derived v0.2 mechanism label? |
+| `launch_critical` | 50 | Accept or reject a Layer-2/3 route prerequisite/row? |
+| `layer2_g4` | 22 | Is this forced-Q row a Layer-2-eligible counterfactual? |
+| `layer3_nkx21` | 28 | Is mechanism stability across contexts eligible? |
+| `coactivator_dependent` | 51 | Does BRD4 degradation DOWN + BRD4 binding support dependence? |
+| `coactivator_independent` | 1071 | Is a BRD4-bound no-change gene an independent contrast candidate? |
 
-## Governance (do not weaken)
+## BRD4 coactivator review checks
 
-- Decision fields are **authoritative human fields**. The site never pre-fills them.
-- Any `assistant_*` / `machine_*` field shown is **guidance only**, clearly labeled.
-- **candidate ≠ eligible.** Exporting decisions does not promote anything; the
-  maintainer merges signed-off decisions back into the master templates and reruns
-  the validators.
+The new coactivator queues use a **gene-level** table, not the original response
+rows. Before accepting:
 
-## For the maintainer (rebuild after data changes)
+- check `duplicate_status`: discordant multi-row genes should already be absent;
+- check `log2fc` / `padj` against the displayed response call;
+- check `n_binding_files_supported` and `binding_files_supported`: the primary
+  rule requires support in at least 2 of 3 released ENCODE IDR peak sets;
+- check `best_binding_tier` and `best_distance_to_TSS`;
+- for the independent side, remember that **unbound** no-change genes are not in
+  this queue; the question is whether a *bound* no-change gene is a clean contrast;
+- reject or mark inconclusive when gene-model identity, low expression, distal
+  assignment, or source context makes the unit unsuitable.
+
+These rows are `SILVER_PLUS_BINDING_CANDIDATE`, not GOLD and not eligible.
+
+## What happens after export
 
 ```bash
-python3 scripts/build_review_site.py     # regenerates review_site/queues.js
+python3 scripts/validate_review_site_exports.py <exported-csvs>
 ```
 
-The bundle `queues.js` is generated from:
-- `data/processed/benchmark_release/gold_labels_v0.2.csv` (gold evidence)
-- `data/processed/manual_audit/launch_critical_full_ai_triage_v0.3_DRAFT.csv`
-- `data/processed/manual_audit/layer2_g4_manual_audit_template_v0.3_DRAFT.csv`
-- `data/processed/manual_audit/layer3_nkx21_manual_audit_template_v0.3_DRAFT.csv`
-- `data/processed/mechanism_class_expansion/coactivator_dependent_candidates_v0.3.csv`
+The validator checks exact columns, controlled vocabulary, reviewer/date/reason,
+unknown and duplicate IDs, coverage, and cross-reviewer conflicts. It writes a
+report under `data/processed/review_site_exports/`.
 
-Exported CSV columns map back to each template's human decision columns
-(`unit_id, <decision fields>, reviewer_id, review_date`) for a straight merge.
-
-### Sharing
-Zip the `review_site/` folder and send it, or host it on any static host
-(GitHub Pages, an internal share). It is pure HTML/CSS/JS with the data baked into
-`queues.js`, so it works offline from `file://`.
+A passing report still does **not** import decisions. A maintainer must resolve
+conflicts, obtain any required second review, and propose a versioned v0.3
+change. No script silently edits the frozen benchmark.

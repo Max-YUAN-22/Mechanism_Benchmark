@@ -115,10 +115,30 @@
     return out;
   }
 
+  function decisionComplete(q, dec) {
+    var missing = [];
+    q.decisions.forEach(function (d) {
+      var value = (dec[d.name] || "").trim();
+      var optional = d.type === "text" && !/_reason$/.test(d.name);
+      var conditional = d.name === "corrected_mechanism_if_change";
+      if (conditional) {
+        if (dec.manual_final_decision === "relabel" && !value) missing.push(d.label);
+        return;
+      }
+      if (!optional && !value) missing.push(d.label);
+    });
+    if (missing.length) {
+      alert("Please complete before marking reviewed:\n- " + missing.join("\n- "));
+      return false;
+    }
+    return true;
+  }
+
   function saveCurrent(markDone) {
     var q = state.queue, row = q.rows[state.idx];
     if (!reviewerId()) { alert("Enter your Reviewer ID at the top first."); return false; }
     var dec = collectDecision();
+    if (markDone && !decisionComplete(q, dec)) return false;
     dec.__reviewer = reviewerId();
     dec.__date = new Date().toISOString().slice(0, 10);
     dec.__done = !!markDone;
