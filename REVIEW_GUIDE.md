@@ -96,6 +96,11 @@ The validator checks exact columns, controlled vocabulary, reviewer/date/reason,
 unknown and duplicate IDs, coverage, and cross-reviewer conflicts. It writes a
 report under `data/processed/review_site_exports/`.
 
+For a final batch submission, add `--require-complete --require-review-plan`.
+This additionally checks that each observed batch has the pre-specified number
+of independent reviewers (for example, two for all BRD4 dependent rows and for
+the `BRD4-INDEP-B01` calibration batch).
+
 A passing report still does **not** import decisions. A maintainer must resolve
 conflicts, obtain any required second review, and propose a versioned v0.3
 change. No script silently edits the frozen benchmark.
