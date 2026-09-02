@@ -1,0 +1,47 @@
+queue_id,review_batch_id,unit_count,first_unit_id,last_unit_id,first_target,last_target,required_review_depth,human_decision_status
+gold_primary,GOLD-B01,20,MB-v0.2-0001,MB-v0.2-0020,ZBTB10,MRPL46,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B02,20,MB-v0.2-0021,MB-v0.2-0040,CKAP2L,SNRPE,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B03,20,MB-v0.2-0041,MB-v0.2-0060,MTMR2,TJAP1,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B04,20,MB-v0.2-0061,MB-v0.2-0080,UFSP1,DUS3L,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B05,20,MB-v0.2-0081,MB-v0.2-0100,PDIA5,MICOS13,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B06,20,MB-v0.2-0101,MB-v0.2-0120,SCNM1,SUFU,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B07,20,MB-v0.2-0121,MB-v0.2-0140,PSMC3,RPL23A,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B08,20,MB-v0.2-0141,MB-v0.2-0160,SNAPIN,ENOX2,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B09,20,MB-v0.2-0161,MB-v0.2-0180,FOXO3B,ZNF566,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B10,20,MB-v0.2-0181,MB-v0.2-0200,ZNF790,TRPM4,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B11,20,MB-v0.2-0201,MB-v0.2-0220,Z84480.1,NDUFAF2,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B12,20,MB-v0.2-0221,MB-v0.2-0240,GMPR,MUS81,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B13,20,MB-v0.2-0241,MB-v0.2-0260,SCNN1A,ZNF296,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B14,20,MB-v0.2-0261,MB-v0.2-0280,GEMIN7,ENSG00000173918,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B15,20,MB-v0.2-0281,MB-v0.2-0300,ENSG00000182013,ENSG00000161395,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B16,20,MB-v0.2-0301,MB-v0.2-0320,ENSG00000132359,ENSG00000288671,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B17,20,MB-v0.2-0321,MB-v0.2-0340,ENSG00000266997,ENSG00000004948,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B18,20,MB-v0.2-0341,MB-v0.2-0360,ENSG00000115844,ENSG00000162654,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B19,20,MB-v0.2-0361,MB-v0.2-0380,ENSG00000161509,ENSG00000146374,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B20,20,MB-v0.2-0381,MB-v0.2-0400,ENSG00000180745,ENSG00000143119,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B21,20,MB-v0.2-0401,MB-v0.2-0420,ENSG00000147174,ENSG00000204065,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B22,20,MB-v0.2-0421,MB-v0.2-0440,ENSG00000101189,ENSG00000198838,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B23,20,MB-v0.2-0441,MB-v0.2-0460,ENSG00000187862,ENSG00000113140,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B24,20,MB-v0.2-0461,MB-v0.2-0480,ENSG00000164508,ENSG00000250361,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B25,20,MB-v0.2-0481,MB-v0.2-0500,ENSG00000158352,ENSG00000154478,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B26,20,MB-v0.2-0501,MB-v0.2-0520,ENSG00000172687,ENSG00000102805,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B27,20,MB-v0.2-0521,MB-v0.2-0540,ENSG00000185737,ENSG00000171431,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B28,20,MB-v0.2-0541,MB-v0.2-0560,ENSG00000049768,ENSG00000102038,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B29,20,MB-v0.2-0561,MB-v0.2-0580,ENSG00000051128,ENSG00000164951,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B30,20,MB-v0.2-0581,MB-v0.2-0600,ENSG00000099985,KIAA1324L,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B31,20,MB-v0.2-0601,MB-v0.2-0620,ITPK1,TNRC18,one primary; second review for high-risk and every proposed change,PENDING
+gold_primary,GOLD-B32,20,MB-v0.2-0621,MB-v0.2-0640,LPIN1,EFHD1,one primary; second review for high-risk and every proposed change,PENDING
+launch_critical,LAUNCH-B01,10,MB-v0.2-0003,MB-v0.2-0070,CPOX,KIZ,one primary; conflict/route-gate rows require senior second review,PENDING
+launch_critical,LAUNCH-B02,10,MB-v0.2-0077,MB-v0.2-0160,HSPA13,ENOX2,one primary; conflict/route-gate rows require senior second review,PENDING
+launch_critical,LAUNCH-B03,10,MB-v0.2-0164,L3-NKX2-1-dTAG2h-H1975-PC9::GMFG,INTS9,GMFG,one primary; conflict/route-gate rows require senior second review,PENDING
+launch_critical,LAUNCH-B04,10,L3-NKX2-1-dTAG2h-H1975-PC9::KCNK7,L3-NKX2-1-dTAG2h-H1975-PC9::MIR4767,KCNK7,MIR4767,one primary; conflict/route-gate rows require senior second review,PENDING
+launch_critical,LAUNCH-B05,10,L3-NKX2-1-dTAG2h-H1975-PC9::MIR484,L3-NKX2-1-dTAG2h-H1975-PC9::UPK3A,MIR484,UPK3A,one primary; conflict/route-gate rows require senior second review,PENDING
+layer2_g4,L2-G4-B01,22,MB-v0.2-0003,MB-v0.2-0164,,,two independent primary reviews before eligibility signoff,PENDING
+layer3_nkx21,L3-NKX21-B01,28,L3-NKX2-1-dTAG2h-H1975-PC9::ABCC12,L3-NKX2-1-dTAG2h-H1975-PC9::UPK3A,ABCC12,UPK3A,two independent primary reviews before eligibility signoff,PENDING
+coactivator_dependent,BRD4-DEP-B01,51,COACT-BD-0001,COACT-BD-0051,ADI1,ZNF207,two independent primary reviews for all 51 rows,PENDING
+coactivator_independent,BRD4-INDEP-B01,179,COACT-BI-0001,COACT-BI-0179,ABHD16A,CROCCP2,B01 calibration double review; B02-B06 one complete primary plus second review for conflicts/non-accept calls,PENDING
+coactivator_independent,BRD4-INDEP-B02,179,COACT-BI-0180,COACT-BI-0358,CS,HOXB-AS1,B01 calibration double review; B02-B06 one complete primary plus second review for conflicts/non-accept calls,PENDING
+coactivator_independent,BRD4-INDEP-B03,179,COACT-BI-0359,COACT-BI-0537,HOXB9,NR4A2,B01 calibration double review; B02-B06 one complete primary plus second review for conflicts/non-accept calls,PENDING
+coactivator_independent,BRD4-INDEP-B04,179,COACT-BI-0538,COACT-BI-0716,NR6A1,RPN1,B01 calibration double review; B02-B06 one complete primary plus second review for conflicts/non-accept calls,PENDING
+coactivator_independent,BRD4-INDEP-B05,179,COACT-BI-0717,COACT-BI-0895,RPRD2,TGFBRAP1,B01 calibration double review; B02-B06 one complete primary plus second review for conflicts/non-accept calls,PENDING
+coactivator_independent,BRD4-INDEP-B06,176,COACT-BI-0896,COACT-BI-1071,TGS1,ZSCAN9,B01 calibration double review; B02-B06 one complete primary plus second review for conflicts/non-accept calls,PENDING

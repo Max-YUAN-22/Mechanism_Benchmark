@@ -63,8 +63,10 @@ h1 { font-size: 20px; margin: 6px 0 10px; }
   border-radius: 6px; padding: 7px 9px; font-size: 14px; width: 100%;
 }
 .nav { display: flex; gap: 8px; justify-content: flex-end; }
-.jump { display: flex; gap: 18px; align-items: center; margin-top: 12px; color: var(--muted); }
+.jump { display: flex; gap: 14px; align-items: center; margin-top: 12px; color: var(--muted); flex-wrap: wrap; }
 .jump input[type=number] { width: 80px; background: var(--card); border: 1px solid var(--line); color: var(--ink); border-radius: 6px; padding: 5px; }
+.jump input[type=text] { width: 210px; background: var(--card); border: 1px solid var(--line); color: var(--ink); border-radius: 6px; padding: 5px 8px; }
+.jump label { display: inline-flex; align-items: center; gap: 6px; }
 
 button { font: inherit; cursor: pointer; border-radius: 7px; padding: 8px 14px; border: 1px solid var(--line); }
 button.primary { background: var(--accent); color: #06182b; border-color: var(--accent); font-weight: 700; }

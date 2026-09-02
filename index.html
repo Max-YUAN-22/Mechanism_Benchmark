@@ -56,13 +56,16 @@
 
   <div class="jump">
     <label>Jump to #<input id="jumpTo" type="number" min="1" /></label>
+    <label>Find ID / target / batch<input id="findText" type="text" autocomplete="off" /></label>
+    <button id="findBtn" class="ghost" type="button">Find</button>
     <label class="filterOnly"><input id="onlyUndone" type="checkbox" /> only unreviewed</label>
   </div>
 </div>
 
 <footer class="muted">
   candidate ≠ eligible · decisions here are authoritative human fields ·
-  assistant fields are guidance only · <a href="REVIEW_GUIDE.md">review guide</a>
+  assistant fields are guidance only · <a href="REVIEW_GUIDE.md">review guide</a> ·
+  <a href="review_execution_plan_v0.3.csv">execution plan</a>
 </footer>
 
 <script src="queues.js"></script>

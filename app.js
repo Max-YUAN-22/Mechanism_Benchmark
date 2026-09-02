@@ -157,6 +157,32 @@
     renderCard();
   }
 
+  function rowSearchText(row) {
+    var parts = [row.id || ""];
+    Object.keys(row.evidence || {}).forEach(function (k) {
+      parts.push(k, row.evidence[k]);
+    });
+    return parts.join(" ").toLowerCase();
+  }
+
+  function findNextMatch() {
+    var needle = (document.getElementById("findText").value || "").trim().toLowerCase();
+    if (!needle) {
+      alert("Enter a unit ID, target name, or review batch (for example BRD4-INDEP-B02).");
+      return;
+    }
+    var rows = state.queue.rows;
+    for (var offset = 1; offset <= rows.length; offset++) {
+      var i = (state.idx + offset) % rows.length;
+      if (rowSearchText(rows[i]).indexOf(needle) !== -1) {
+        state.idx = i;
+        renderCard();
+        return;
+      }
+    }
+    alert("No match in this queue for: " + needle);
+  }
+
   // ---- export -----------------------------------------------------------
   function exportCsv() {
     var q = state.queue, dstore = decisionsFor(q.id);
@@ -207,6 +233,10 @@
   document.getElementById("jumpTo").onchange = function (e) {
     var n = parseInt(e.target.value, 10);
     if (n >= 1 && n <= state.queue.rows.length) { state.idx = n - 1; renderCard(); }
+  };
+  document.getElementById("findBtn").onclick = findNextMatch;
+  document.getElementById("findText").onkeydown = function (e) {
+    if (e.key === "Enter") { e.preventDefault(); findNextMatch(); }
   };
   document.getElementById("onlyUndone").onchange = function (e) {
     state.onlyUndone = e.target.checked; state.idx = firstIndex(); renderCard();
