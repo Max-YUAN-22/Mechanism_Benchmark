@@ -32,8 +32,9 @@ using another computer creates a separate local store.
 | `layer3_nkx21` | 28 | Is mechanism stability across contexts eligible? |
 | `coactivator_dependent` | 51 | Does BRD4 degradation DOWN + BRD4 binding support dependence? |
 | `coactivator_independent` | 1071 | Is a BRD4-bound no-change gene an independent contrast candidate? |
-| `foxo1_axisa` | 403 | Does deposited FOXO1 PRO+ATAC evidence support this context-unit candidate? |
-| `foxo1_layer3` | 7 | Is this two-context FOXO1 pair a review-only pilot candidate? |
+| `foxo1_axisa` | 729 | Does deposited FOXO1 PRO+ATAC evidence support this context-unit candidate? |
+| `foxo1_layer3` | 76 | Is this two-context FOXO1 pair a review-only candidate? |
+| `smarca5_pregate` | 107 | Does this promoter-bound DOWN row belong in the SMARCA5 pre-gate evidence pool? |
 
 ## Operational review batches
 
@@ -51,8 +52,9 @@ Machine-readable assignment boundaries:
 | `layer3_nkx21` | all rows | `L3-NKX21-B01` |
 | `coactivator_dependent` | all rows | `BRD4-DEP-B01` |
 | `coactivator_independent` | 179 rows per batch (final batch: 176) | `BRD4-INDEP-B01` … `BRD4-INDEP-B06` |
-| `foxo1_axisa` | 20 rows per batch (final batch: 3) | `FOXO1-A-B01` … `FOXO1-A-B21` |
-| `foxo1_layer3` | all rows | `FOXO1-L3-B01` |
+| `foxo1_axisa` | 20 rows per batch (final batch: 9) | `FOXO1-A-B01` … `FOXO1-A-B37` |
+| `foxo1_layer3` | 20 rows per batch (final batch: 16) | `FOXO1-L3-B01` … `FOXO1-L3-B04` |
+| `smarca5_pregate` | 20 rows per batch (final batch: 7) | `SMARCA5-PG-B01` … `SMARCA5-PG-B06` |
 
 ### Recommended sequencing
 
@@ -68,10 +70,14 @@ Machine-readable assignment boundaries:
 4. **GOLD audit:** review `GOLD-B01`–`B32` in high-risk-first order when
    available. At minimum, all flagged/high-risk rows and every proposed
    relabel/remove/inconclusive call require a second independent review.
-5. **FOXO1 factor pilot:** `FOXO1-A-B01` is the calibration batch; then
-   parallelize B02–B21. Every relabel/reject/needs-binding call gets a second
-   review. `FOXO1-L3-B01` is diagnostic only because 7 pairs is below the
-   Layer-3 numeric gate and cannot create eligibility.
+5. **FOXO1 factor/Layer-3 pilot:** `FOXO1-A-B01` is the calibration batch; then
+   parallelize B02–B37. Every relabel/reject/needs-binding call gets a second
+   review. Review `FOXO1-L3-B01`–`B04`, remembering that 76 pair units cover
+   only 68 targets and related pairs are not independent biological replicates.
+6. **SMARCA5 pre-gate audit:** review `SMARCA5-PG-B01`–`B06` only to check
+   row-level evidence quality. This queue cannot promote Axis-D because the
+   per-target spacing/architecture-state diagnostic and exact-clone audit remain
+   mandatory.
 
 These are review-completion rules, not promotion rules. A completed CSV still
 requires validation, conflict resolution, any required second review, and a
@@ -94,6 +100,24 @@ rows. Before accepting:
 
 These rows are `SILVER_PLUS_BINDING_CANDIDATE`, not GOLD and not eligible.
 
+## SMARCA5 Axis-D pre-gate checks
+
+These 107 rows are promoter-bound, nascent-DOWN rows after rapid SMARCA5
+degradation. They are **not** a scored mechanism class and cannot be made
+Axis-D eligible by reviewer signoff.
+
+Before confirming a row:
+
+- check `response_baseMean`, `response_log2fc`, and `response_padj` against the
+  displayed DOWN call;
+- check `binding_distance_to_tss` and `binding_peak_baseMean`;
+- remember that the CUT&RUN support is currently cross-clone, not audited as
+  the exact PRO-seq degron clone;
+- select the missing gate (`needs_spacing_check`, `needs_clone_audit`, or
+  `needs_both`) rather than trying to waive it;
+- reject or mark inconclusive if transcript/gene identity or promoter assignment
+  is unsuitable.
+
 ## FOXO1 DLBCL review checks
 
 FOXO1 rows are `SILVER_MULTI_AXIS_CANDIDATE`, not GOLD and not an official
@@ -110,8 +134,9 @@ sixth factor. Before accepting:
   nearby peak supports direct regulation;
 - remember that no exact-context FOXO1 ChIP/CUT&RUN filter has yet been added;
   `needs_binding_data` is preferable to an unsupported directness claim;
-- use `foxo1_layer3` only to audit the seven two-context pairs. It cannot
-  promote Layer 3 because the route is below the numeric gate.
+- use `foxo1_layer3` only to audit candidate pairs. It cannot promote Layer 3
+  without exact-context binding evidence, human review, conflict resolution,
+  and a versioned release.
 
 ## What happens after export
 
