@@ -45,3 +45,25 @@ coactivator_independent,BRD4-INDEP-B03,179,COACT-BI-0359,COACT-BI-0537,HOXB9,NR4
 coactivator_independent,BRD4-INDEP-B04,179,COACT-BI-0538,COACT-BI-0716,NR6A1,RPN1,B01 calibration double review; B02-B06 one complete primary plus second review for conflicts/non-accept calls,PENDING
 coactivator_independent,BRD4-INDEP-B05,179,COACT-BI-0717,COACT-BI-0895,RPRD2,TGFBRAP1,B01 calibration double review; B02-B06 one complete primary plus second review for conflicts/non-accept calls,PENDING
 coactivator_independent,BRD4-INDEP-B06,176,COACT-BI-0896,COACT-BI-1071,TGS1,ZSCAN9,B01 calibration double review; B02-B06 one complete primary plus second review for conflicts/non-accept calls,PENDING
+foxo1_axisa,FOXO1-A-B01,20,FOXO1|OCI-LY1|ABLIM2,FOXO1|OCI-LY1|ARIH2,ABLIM2,ARIH2,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B02,20,FOXO1|OCI-LY1|ARL2BP,FOXO1|OCI-LY1|BLM,ARL2BP,BLM,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B03,20,FOXO1|OCI-LY1|BMP7,FOXO1|OCI-LY1|CHKB-CPT1B,BMP7,CHKB-CPT1B,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B04,20,FOXO1|OCI-LY1|CHMP1A,FOXO1|OCI-LY1|CS,CHMP1A,CS,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B05,20,FOXO1|OCI-LY1|CSNK1G1,FOXO1|OCI-LY1|EFNA5,CSNK1G1,EFNA5,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B06,20,FOXO1|OCI-LY1|EIF3K,FOXO1|OCI-LY1|FOXRED2,EIF3K,FOXRED2,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B07,20,FOXO1|OCI-LY1|FYN,FOXO1|OCI-LY1|HGSNAT,FYN,HGSNAT,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B08,20,FOXO1|OCI-LY1|HLA-A,FOXO1|OCI-LY1|KLHL21,HLA-A,KLHL21,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B09,20,FOXO1|OCI-LY1|KLRG1,FOXO1|OCI-LY1|MAN1B1,KLRG1,MAN1B1,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B10,20,FOXO1|OCI-LY1|MAP2K1,FOXO1|OCI-LY1|MRPL36,MAP2K1,MRPL36,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B11,20,FOXO1|OCI-LY1|MSS51,FOXO1|OCI-LY1|NRADDP,MSS51,NRADDP,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B12,20,FOXO1|OCI-LY1|NT5C,FOXO1|OCI-LY1|PIP4K2B,NT5C,PIP4K2B,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B13,20,FOXO1|OCI-LY1|PISD,FOXO1|OCI-LY1|PTPRC,PISD,PTPRC,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B14,20,FOXO1|OCI-LY1|RAB3D,FOXO1|OCI-LY1|SBF2,RAB3D,SBF2,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B15,20,FOXO1|OCI-LY1|SCML2,FOXO1|OCI-LY1|SPECC1L,SCML2,SPECC1L,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B16,20,FOXO1|OCI-LY1|SPICE1,FOXO1|OCI-LY1|TMEM175,SPICE1,TMEM175,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B17,20,FOXO1|OCI-LY1|TMEM203,FOXO1|OCI-LY1|UAP1L1,TMEM203,UAP1L1,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B18,20,FOXO1|OCI-LY1|UBC,FOXO1|OCI-LY1|YOD1,UBC,YOD1,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B19,20,FOXO1|OCI-LY1|ZC3HC1,FOXO1|SU-DHL4|BACH2,ZC3HC1,BACH2,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B20,20,FOXO1|SU-DHL4|CCDC159,FOXO1|SU-DHL4|THUMPD2,CCDC159,THUMPD2,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_axisa,FOXO1-A-B21,3,FOXO1|SU-DHL4|TMEM205,FOXO1|SU-DHL4|YPEL2,TMEM205,YPEL2,one primary review per context-unit; second review for every relabel/reject/needs-binding call,PENDING
+foxo1_layer3,FOXO1-L3-B01,7,FOXO1|DOCK6|OCI-LY1|SU-DHL4,FOXO1|TNFRSF10B|OCI-LY1|SU-DHL4,DOCK6,TNFRSF10B,one diagnostic pilot review per pair; no eligibility signoff because the route is below gate,PENDING

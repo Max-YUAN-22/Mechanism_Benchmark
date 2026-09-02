@@ -32,6 +32,8 @@ using another computer creates a separate local store.
 | `layer3_nkx21` | 28 | Is mechanism stability across contexts eligible? |
 | `coactivator_dependent` | 51 | Does BRD4 degradation DOWN + BRD4 binding support dependence? |
 | `coactivator_independent` | 1071 | Is a BRD4-bound no-change gene an independent contrast candidate? |
+| `foxo1_axisa` | 403 | Does deposited FOXO1 PRO+ATAC evidence support this context-unit candidate? |
+| `foxo1_layer3` | 7 | Is this two-context FOXO1 pair a review-only pilot candidate? |
 
 ## Operational review batches
 
@@ -49,6 +51,8 @@ Machine-readable assignment boundaries:
 | `layer3_nkx21` | all rows | `L3-NKX21-B01` |
 | `coactivator_dependent` | all rows | `BRD4-DEP-B01` |
 | `coactivator_independent` | 179 rows per batch (final batch: 176) | `BRD4-INDEP-B01` … `BRD4-INDEP-B06` |
+| `foxo1_axisa` | 20 rows per batch (final batch: 3) | `FOXO1-A-B01` … `FOXO1-A-B21` |
+| `foxo1_layer3` | all rows | `FOXO1-L3-B01` |
 
 ### Recommended sequencing
 
@@ -64,6 +68,10 @@ Machine-readable assignment boundaries:
 4. **GOLD audit:** review `GOLD-B01`–`B32` in high-risk-first order when
    available. At minimum, all flagged/high-risk rows and every proposed
    relabel/remove/inconclusive call require a second independent review.
+5. **FOXO1 factor pilot:** `FOXO1-A-B01` is the calibration batch; then
+   parallelize B02–B21. Every relabel/reject/needs-binding call gets a second
+   review. `FOXO1-L3-B01` is diagnostic only because 7 pairs is below the
+   Layer-3 numeric gate and cannot create eligibility.
 
 These are review-completion rules, not promotion rules. A completed CSV still
 requires validation, conflict resolution, any required second review, and a
@@ -85,6 +93,25 @@ rows. Before accepting:
   assignment, or source context makes the unit unsuitable.
 
 These rows are `SILVER_PLUS_BINDING_CANDIDATE`, not GOLD and not eligible.
+
+## FOXO1 DLBCL review checks
+
+FOXO1 rows are `SILVER_MULTI_AXIS_CANDIDATE`, not GOLD and not an official
+sixth factor. Before accepting:
+
+- check that the selected PRO transcript has adequate base level and that
+  `transcript_status` is not ambiguous;
+- check `pro_call`, `pro_log2fc`, and `pro_padj` against the preregistered
+  thresholds;
+- check the assigned `atac_feature`, `atac_assignment`, and distance to TSS:
+  promoter assignment is preferable; distal 50 kb nearest-gene assignments need
+  a biological reason;
+- check `atac_call`, `atac_log2fc`, and `atac_padj` rather than assuming that a
+  nearby peak supports direct regulation;
+- remember that no exact-context FOXO1 ChIP/CUT&RUN filter has yet been added;
+  `needs_binding_data` is preferable to an unsupported directness claim;
+- use `foxo1_layer3` only to audit the seven two-context pairs. It cannot
+  promote Layer 3 because the route is below the numeric gate.
 
 ## What happens after export
 
