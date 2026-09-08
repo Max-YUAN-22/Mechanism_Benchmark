@@ -221,6 +221,7 @@
   function back() {
     document.getElementById("review").classList.add("hidden");
     document.getElementById("setup").classList.remove("hidden");
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
     renderQueues();
   }
   document.getElementById("backBtn").onclick = back;
@@ -252,5 +253,12 @@
       '<p class="muted">queues.js not loaded. Run <code>python3 scripts/build_review_site.py</code> first.</p>';
   } else {
     renderQueues();
+    // deep-link: index.html#<queueId> opens that queue directly (from the overview page)
+    function routeFromHash() {
+      var h = (location.hash || "").replace(/^#/, "");
+      if (h && BUNDLE.queues.some(function (q) { return q.id === h; })) openQueue(h);
+    }
+    routeFromHash();
+    window.addEventListener("hashchange", routeFromHash);
   }
 })();

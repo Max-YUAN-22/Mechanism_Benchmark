@@ -24,6 +24,11 @@ td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .k{font-weight:600}
 .legend span{margin-right:14px;font-size:12.5px}
 footer{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
+.cta{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.btn{display:inline-block;padding:9px 15px;border-radius:8px;background:#0969da;color:#fff;text-decoration:none;font-size:14px;font-weight:600}
+.btn.ghost{background:#fff;color:#0969da;border:1px solid #0969da}
+.btn:hover{opacity:.9}
+a.rev{color:#0969da;font-weight:600;white-space:nowrap;text-decoration:none}
 </style>
 </head>
 <body>
@@ -31,6 +36,14 @@ footer{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(
 
 <h1>MechanismBench — 一页总览</h1>
 <p class="sub">让调控边的<b>操作机制</b>成为可评分、可审查、可被怀疑者重推的对象。 &nbsp;|&nbsp; 状态快照(诚实分级)</p>
+<div class="cta">
+  <a class="btn" href="index.html">🔍 进入审查站 Review Site</a>
+  <a class="btn ghost" href="index.html#gold_primary">GOLD 640</a>
+  <a class="btn ghost" href="index.html#layer2_g4">Layer 2 · G4</a>
+  <a class="btn ghost" href="index.html#layer3_nkx21">Layer 3 · NKX2-1</a>
+  <a class="btn ghost" href="index.html#coactivator_dependent">BRD4 coactivator</a>
+  <a class="btn ghost" href="index.html#smarca5_pregate">SMARCA5</a>
+</div>
 
 <div class="lead">
 <b>一句话:</b> 现有 GRN benchmark 评估"A 是否调控 B"(拓扑);MechanismBench 评估"A 怎么调控 B"(机制)。
@@ -65,9 +78,9 @@ MED14 与 BRD4 共享 nascent↓+ATAC平 的诊断信号,靠"扰动哪个因子"
 <h2>② 三层评测 · Layers(分别验收)</h2>
 <table>
 <tr><th>层</th><th>问的问题</th><th class="n">规模</th><th class="n">official eligible</th><th>状态</th></tr>
-<tr><td>Layer 1 — 分类</td><td>给数据,判机制类</td><td class="n">587 official + 25 baselines</td><td class="n">已成型</td><td><span class="tag t-gold">完整(可独立成文)</span></td></tr>
-<tr><td>Layer 2 — 反事实</td><td>知道机制有没有用(独立第二诊断 Q)</td><td class="n">G4 22 候选 / Hemin 8</td><td class="n">0 官方<br><span class="note">(待签字)</span></td><td><span class="tag t-cand">6/8 forced-Q 过全部机器可核标准</span> · 剩人类判断:strand convention · 窗口可比 · 签字</td></tr>
-<tr><td>Layer 3 — 跨情境</td><td>机制换细胞系还成立吗(同边多情境)</td><td class="n">NKX2-1 31 + BRD4 880*</td><td class="n">0 官方<br><span class="note">(待签字)</span></td><td><span class="tag t-cand">NKX2-1 30/31 过全部机器可核标准</span> · BRD4 880(81.5% stable)候选 · 剩人类判断:binding directness · switch真伪 · 签字+import</td></tr>
+<tr><td>Layer 1 — 分类</td><td>给数据,判机制类</td><td class="n">587 official + 25 baselines</td><td class="n">已成型</td><td><span class="tag t-gold">完整(可独立成文)</span> &nbsp;<a class="rev" href="index.html#gold_primary">→ 审查 GOLD</a></td></tr>
+<tr><td>Layer 2 — 反事实</td><td>知道机制有没有用(独立第二诊断 Q)</td><td class="n">G4 22 候选 / Hemin 8</td><td class="n">0 官方<br><span class="note">(待签字)</span></td><td><span class="tag t-cand">6/8 forced-Q 过全部机器可核标准</span> · 剩人类判断:strand convention · 窗口可比 · 签字 &nbsp;<a class="rev" href="index.html#layer2_g4">→ 审查 G4</a></td></tr>
+<tr><td>Layer 3 — 跨情境</td><td>机制换细胞系还成立吗(同边多情境)</td><td class="n">NKX2-1 31 + BRD4 880*</td><td class="n">0 官方<br><span class="note">(待签字)</span></td><td><span class="tag t-cand">NKX2-1 30/31 过全部机器可核标准</span> · BRD4 880(81.5% stable)候选 · 剩人类判断:binding directness · switch真伪 · 签字+import &nbsp;<a class="rev" href="index.html#layer3_nkx21">→ 审查 NKX2-1</a></td></tr>
 </table>
 <p class="note">* BRD4 880 = HCT116(ENCODE)+K562(GSE111463)同边双情境,81.5% stable / 163 context-switch(真 OOD 信号)。
 SMARCA5 双情境 3682 条但 52.6% stable(时间点不匹配 → 噪声,<b>单列不算干净</b>)。</p>
