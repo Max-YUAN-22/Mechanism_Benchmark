@@ -118,6 +118,52 @@ SMARCA5 双情境 3682 条但 52.6% stable(时间点不匹配 → 噪声,<b>单�
 <tr><td>Layer 2/3 eligible</td><td>candidate≠eligible,须人审</td><td>具名人类评审签字(AI 已出 first-pass provisional)</td></tr>
 </table>
 
+
+<h2>⑥ 怎么审核 &amp; 审核后存哪里 · How to review / where it's stored</h2>
+<div class="lead">
+<b>流程:</b> 填 Reviewer ID → 选队列(或从本页点 <span class="k">→ 审查</span>)→ 看证据(provenance · 响应 · decision rule · risk flags)→
+做决定 + <b>写具体理由</b> → <b>Save &amp; Next</b> → 一键 <b>Export CSV</b>。
+</div>
+<table>
+<tr><th>阶段</th><th>发生什么 / 存在哪</th></tr>
+<tr><td>审核中</td><td>决定实时存进<b>你自己浏览器的 localStorage</b>(可关可续,换机不同步)。网站<b>离线可用、无服务器、不上传</b>。</td></tr>
+<tr><td>导出</td><td>点 Export CSV → 得到一份<b>每队列一个 CSV</b>(含 unit_id · 决定 · 理由 · Reviewer ID · 日期)。</td></tr>
+<tr><td>回流校验</td><td>CSV 交给 <span class="mono">scripts/validate_review_site_exports.py</span> → 检查 vocabulary/schema/reviewer/date/reason/未知ID/重复/跨审冲突。</td></tr>
+<tr><td>冲突解决 + 二审</td><td>人工解决冲突 + 预注册要求的<b>独立第二审</b>(如 BRD4 dependent 全部双审)。</td></tr>
+<tr><td>正式入库</td><td>→ 版本化 <b>v0.3 提案</b>。<b>网站永不直接改 benchmark;<code>eligible</code> 只在正式 v0.3 import 时由人翻。frozen v0.2 不动。</b></td></tr>
+</table>
+
+<h2>⑦ 每个队列审什么 · What each queue asks</h2>
+<table>
+<tr><th>队列</th><th class="n">行数</th><th>审什么(核心判断)</th><th>进入</th></tr>
+<tr><td>GOLD primary</td><td class="n">640</td><td>派生的机制标签是否被两轴证据支持?是否需 relabel / reject?</td><td><a class="rev" href="index.html#gold_primary">→ 审查</a></td></tr>
+<tr><td>Launch-critical</td><td class="n">50</td><td>route-gate 关键行;conflict / 非 accept 需资深二审</td><td><a class="rev" href="index.html#launch_critical">→ 审查</a></td></tr>
+<tr><td>Layer 2 · G4</td><td class="n">22</td><td>接受全局 strand convention?1h-Q vs 30min-primary 窗口可比?deposited forced-Q 答案?(不以 KAS/qPRO 为准)</td><td><a class="rev" href="index.html#layer2_g4">→ 审查</a></td></tr>
+<tr><td>Layer 3 · NKX2-1</td><td class="n">28</td><td>same-edge identity · assay QC · binding 证据 · 双情境方向性派生 · ENTPD3 切换真伪</td><td><a class="rev" href="index.html#layer3_nkx21">→ 审查</a></td></tr>
+<tr><td>BRD4 dependent</td><td class="n">51</td><td>binding-supported dependent 侧;<b>全部两名独立审</b></td><td><a class="rev" href="index.html#coactivator_dependent">→ 审查</a></td></tr>
+<tr><td>BRD4 independent</td><td class="n">1071</td><td>B01 校准批双审;B02+ 至少一套 primary + 冲突/非accept 二审</td><td><a class="rev" href="index.html#coactivator_independent">→ 审查</a></td></tr>
+<tr><td>FOXO1 Axis-A</td><td class="n">729</td><td>每个 context-unit 一次 primary;relabel/reject/needs-binding 二审</td><td><a class="rev" href="index.html#foxo1_axisa">→ 审查</a></td></tr>
+<tr><td>FOXO1 Layer-3 pairs</td><td class="n">76</td><td>每对一次候选审;<b>76 是 pair 数不是独立 target(68)</b>;无 binding+人 gate 不 signoff</td><td><a class="rev" href="index.html#foxo1_layer3">→ 审查</a></td></tr>
+<tr><td>SMARCA5 pre-gate</td><td class="n">107</td><td>确认行级证据质量 + <b>标出缺失的 spacing/clone gate</b>;审查不能把 Axis-D 判成 eligible</td><td><a class="rev" href="index.html#smarca5_pregate">→ 审查</a></td></tr>
+</table>
+
+<h2>⑧ 原论文 / 数据来源 · Sources (GEO / ENCODE)</h2>
+<table>
+<tr><th>因子 / 路线</th><th>系统</th><th>公开数据</th></tr>
+<tr><td>ZNF143</td><td>HEK293T dTAG 30min</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE266489" target="_blank">GSE266489</a> · <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE266490" target="_blank">GSE266490</a> · <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE266491" target="_blank">GSE266491</a></td></tr>
+<tr><td>PAX3-FOXO1</td><td>Rh30 dTAG 2h</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE183281" target="_blank">GSE183281</a> · <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE183293" target="_blank">GSE183293</a> · <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE183295" target="_blank">GSE183295</a></td></tr>
+<tr><td>BCL11A</td><td>HUDEP-2 dTAG</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE194348" target="_blank">GSE194348</a> · <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE194345" target="_blank">GSE194345</a> · <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE194339" target="_blank">GSE194339</a> · <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE104676" target="_blank">GSE104676</a></td></tr>
+<tr><td>RUNX1</td><td>MCF10A dTAG 3h</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE314312" target="_blank">GSE314312</a> · <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE314301" target="_blank">GSE314301</a></td></tr>
+<tr><td>TRPS1</td><td>T47D dTAG</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE251772" target="_blank">GSE251772</a> · <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE236175" target="_blank">GSE236175</a></td></tr>
+<tr><td>MYC / BRD4</td><td>K562 AID</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE111463" target="_blank">GSE111463</a></td></tr>
+<tr><td>AML1-ETO</td><td>Kasumi-1 dTAG 1h</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE153267" target="_blank">GSE153267</a></td></tr>
+<tr><td>SMARCA5 (spacing)</td><td>Kasumi-1 dTAG</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160470" target="_blank">GSE160470</a> · <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160459" target="_blank">GSE160459</a></td></tr>
+<tr><td>ENCODE degron 扩张<br>(RAD21/SMARCA5/BRD4/MED14/CDK7/CTCF…)</td><td>HCT116 AID2 6h</td><td><a href="https://www.encodeproject.org/degron-matrix/?type=Experiment&amp;internal_tags=Degron" target="_blank">ENCODE Degron matrix</a></td></tr>
+<tr><td>Layer 2 · G4/TMPyP4</td><td>—</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE178668" target="_blank">GSE178668</a></td></tr>
+<tr><td>Layer 3 · NKX2-1</td><td>PC9 / NCI-H1975 dTAG 2h</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE229539" target="_blank">GSE229539</a> · <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE229541" target="_blank">GSE229541</a></td></tr>
+</table>
+<p class="note">每条 GOLD/候选边的完整 provenance(regulator · target · accession · cell type · perturbation · timepoint · 响应值 · decision rule · tier · binding filter)在审查站每张卡片上都可见。</p>
+
 <footer>
 数据快照均来自本仓库真实产物(frozen v0.2 release、ENCODE HCT116-AID2 degron 派生、DESeq2 精化)。
 所有 ENCODE 扩张轴为<b>预备级(CPM/DESeq2 · 6h · 单细胞系)、候选、待人审</b>;<b>有数据 ≠ eligible</b>。
