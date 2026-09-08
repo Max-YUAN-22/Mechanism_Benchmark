@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MechanismBench — 一页总览</title>
+<style>
+:root{--gold:#1a7f37;--cand:#9a6700;--weak:#b35900;--block:#8250df;--bad:#cf222e;--ink:#1f2328;--mut:#656d76;--line:#d0d7de;--bg:#f6f8fa}
+*{box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;color:var(--ink);margin:0;line-height:1.5;background:#fff}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px}
+h1{font-size:26px;margin:0 0 4px}
+h2{font-size:19px;margin:34px 0 10px;padding-top:14px;border-top:2px solid var(--line)}
+.sub{color:var(--mut);margin:0 0 6px}
+.lead{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:8px 0 4px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--bg);font-weight:600}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{display:inline-block;padding:1px 7px;border-radius:999px;font-size:11.5px;font-weight:600;color:#fff;white-space:nowrap}
+.t-gold{background:var(--gold)}.t-cand{background:var(--cand)}.t-weak{background:var(--weak)}.t-block{background:var(--block)}.t-bad{background:var(--bad)}
+.note{color:var(--mut);font-size:12.5px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+.k{font-weight:600}
+.legend span{margin-right:14px;font-size:12.5px}
+footer{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>MechanismBench — 一页总览</h1>
+<p class="sub">让调控边的<b>操作机制</b>成为可评分、可审查、可被怀疑者重推的对象。 &nbsp;|&nbsp; 状态快照(诚实分级)</p>
+
+<div class="lead">
+<b>一句话:</b> 现有 GRN benchmark 评估"A 是否调控 B"(拓扑);MechanismBench 评估"A 怎么调控 B"(机制)。
+标签<b>不抄论文结论</b>——先冻结两个竞争机制的<b>方向性预测</b>,再从公开扰动数据按固定规则强制标签,
+匹配→A、矛盾→B、都不像→inconclusive(诚实类)。<b>只看方向、不看幅度</b>(方向是二元、不可抵赖)。
+</div>
+
+<p class="legend">
+<span class="tag t-gold">强/官方</span>已成型可打分
+<span class="tag t-cand">候选</span>有真实数据、待人审
+<span class="tag t-weak">弱</span>数据/信号不足
+<span class="tag t-block">受阻</span>数据/生物学墙
+<span class="tag t-bad">缺</span>未实现
+</p>
+
+<h2>① 机制轴 · Mechanisms(诚实分级)</h2>
+<table>
+<tr><th>机制轴</th><th>因子 / 例子</th><th>判别读出</th><th class="n">A / B 或规模</th><th class="n">macro-F1</th><th>状态</th></tr>
+<tr><td>Chromatin gating 染色质门控</td><td>ZNF143/BCL11A/RUNX1…</td><td>ATAC + nascent</td><td class="n">344 GOLD</td><td class="n">0.759 (RUNX1)</td><td><span class="tag t-gold">官方 scored</span></td></tr>
+<tr><td>TF kinetics 浓度/动力学</td><td>同上(另一侧)</td><td>ATAC + nascent</td><td class="n">296 GOLD / 243 official</td><td class="n">—</td><td><span class="tag t-gold">官方 scored</span></td></tr>
+<tr><td>Coactivator — Mediator 依赖</td><td>MED14 (ENCODE)</td><td>nascent↓ + ATAC 平</td><td class="n">2410 / 2607</td><td class="n">0.680</td><td><span class="tag t-cand">强候选(DESeq2)</span></td></tr>
+<tr><td>Coactivator — reader 依赖</td><td>BRD4 (ENCODE)</td><td>nascent↓ + ATAC 平</td><td class="n">1268 / 4122</td><td class="n">0.595</td><td><span class="tag t-cand">强候选(DESeq2)</span></td></tr>
+<tr><td>Looping / 架构依赖</td><td>RAD21 (ENCODE)</td><td>ChIA-PET 接触↓</td><td class="n">45 / 8964</td><td class="n">0.561→0.498</td><td><span class="tag t-weak">弱(正类小)</span></td></tr>
+<tr><td>Remodeler 依赖</td><td>SMARCA5 (ENCODE)</td><td>ATAC / spacing</td><td class="n">15 / 566</td><td class="n">~chance</td><td><span class="tag t-weak">弱</span></td></tr>
+<tr><td>Pause-release 依赖</td><td>CDK7 (ENCODE)</td><td>nascent↓ + ATAC 平</td><td class="n">142 / 10065</td><td class="n">~chance</td><td><span class="tag t-weak">弱</span></td></tr>
+<tr><td>Burst modulation 频率</td><td>Smart-seq3 pilot</td><td>等位分辨 scRNA</td><td class="n">0 / 20</td><td class="n">—</td><td><span class="tag t-block">未达 grade(数据稀缺)</span></td></tr>
+<tr><td>PRC2 门锁(旗舰例子)</td><td>EZH2/PRC2</td><td>H3K27me3(慢)</td><td class="n">—</td><td class="n">—</td><td><span class="tag t-bad">未实现(慢时间尺度不匹配急性诊断)</span></td></tr>
+</table>
+<p class="note"><b>口径:</b> 诊断能"从响应模式区分"的粗类 = <b>2</b>(染色质耦合 vs 转录直接);按"扰动因子/药靶"分的机制 = <b>~6 有数据、4 个强</b>。
+MED14 与 BRD4 共享 nascent↓+ATAC平 的诊断信号,靠"扰动哪个因子"区分 —— 报告时须说明,不等同两个独立诊断类。</p>
+
+<h2>② 三层评测 · Layers(分别验收)</h2>
+<table>
+<tr><th>层</th><th>问的问题</th><th class="n">规模</th><th class="n">official eligible</th><th>状态</th></tr>
+<tr><td>Layer 1 — 分类</td><td>给数据,判机制类</td><td class="n">587 official + 25 baselines</td><td class="n">已成型</td><td><span class="tag t-gold">完整(可独立成文)</span></td></tr>
+<tr><td>Layer 2 — 反事实</td><td>知道机制有没有用(独立第二诊断 Q)</td><td class="n">G4 22 候选 / Hemin 8</td><td class="n">0</td><td><span class="tag t-cand">候选,待人审(正交诊断稀缺,难扩)</span></td></tr>
+<tr><td>Layer 3 — 跨情境</td><td>机制换细胞系还成立吗(同边多情境)</td><td class="n">NKX2-1 31 + BRD4 880*</td><td class="n">0</td><td><span class="tag t-cand">候选,待人审</span></td></tr>
+</table>
+<p class="note">* BRD4 880 = HCT116(ENCODE)+K562(GSE111463)同边双情境,81.5% stable / 163 context-switch(真 OOD 信号)。
+SMARCA5 双情境 3682 条但 52.6% stable(时间点不匹配 → 噪声,<b>单列不算干净</b>)。</p>
+
+<h2>③ 真正的多机制解释 · Multi-axis(证明了形态,数据受限)</h2>
+<table>
+<tr><th>机制类(由跨轴 pattern 读出,非按因子)</th><th class="n">边数</th><th>判据</th></tr>
+<tr><td>transcription_direct 转录直接</td><td class="n">5202 (97%)</td><td>nascent↓,染色质平</td></tr>
+<tr><td>chromatin_dependent 染色质</td><td class="n">100</td><td>ATAC 变</td></tr>
+<tr><td>looping_dependent</td><td class="n">57</td><td>接触↓</td></tr>
+<tr><td>acetylation_coupled(H3K27ac 轴,新增)</td><td class="n">52 (BRD4)</td><td>H3K27ac↓ + ATAC 平</td></tr>
+</table>
+<p class="note">3-class macro-F1 = 0.373(majority 0.971)。<b>方法对、也 work,但当前只可靠读 2-3 类且严重偏斜</b>——因 6h 时间点 + 仅 promoter-ATAC + 接触轴只有 RAD21 + <b>缺组蛋白标记轴</b>。
+扩到 6-8 平衡强类 = 整合完整多组学轴(H3K27ac/H3K27me3 MINT-ChIP、各因子接触、enhancer 级 ATAC、更早时间点)——真数据工程。</p>
+
+<h2>④ 完整性与可信度 · Integrity</h2>
+<table>
+<tr><th>项</th><th>状态</th></tr>
+<tr><td>非循环标签(方向性、model-free、可被怀疑者重推)</td><td><span class="tag t-gold">✓ 已实现</span></td></tr>
+<tr><td>可复现性(官方 scorer 重跑冻结 submission)</td><td><span class="tag t-gold">✓ 0.759 / 0.752 / 0.621 @ n=587,完整性通过</span></td></tr>
+<tr><td>Release 可重推性</td><td><span class="tag t-gold">✓ 修复:403/640 → 587/587</span>(ZNF143 交叉列 bug 回填 184/184;TRPS1 53 弱标签 quarantine)</td></tr>
+<tr><td>derived-vs-stated 不一致率</td><td><span class="tag t-bad">✗ 未算</span>(per-edge 论文 claim 未 curate,需读论文)</td></tr>
+<tr><td>人工审核(所有类,含官方 2 类)</td><td><span class="tag t-block">0 / 587 pending</span>(candidate→eligible 唯一的关,须具名人审)</td></tr>
+<tr><td>frozen v0.2</td><td><span class="tag t-gold">未改</span>;所有修复/扩张为 v0.3/v0.4 提案,待签字</td></tr>
+</table>
+
+<h2>⑤ 缺口与真实代价 · What it takes</h2>
+<table>
+<tr><th>缺口</th><th>为什么没实现</th><th>真要补需要</th></tr>
+<tr><td>不一致率</td><td>stated claim 28638 条全空</td><td>逐篇读源论文 curate(真人)</td></tr>
+<tr><td>PRC2 旗舰例子</td><td>H3K27me3 慢(几天),不匹配急性诊断</td><td>慢动力学诊断规则 + 多天 EED degron 数据</td></tr>
+<tr><td>频率/bursting</td><td>扰动配对的等位分辨 scRNA 稀缺</td><td>找到合格数据集(可能不存在)</td></tr>
+<tr><td>6-8 平衡强机制类</td><td>缺组蛋白标记轴等,当前偏斜</td><td>整合完整多组学轴(H3K27ac MINT-ChIP 优先)</td></tr>
+<tr><td>Layer 2/3 eligible</td><td>candidate≠eligible,须人审</td><td>具名人类评审签字(AI 已出 first-pass provisional)</td></tr>
+</table>
+
+<footer>
+数据快照均来自本仓库真实产物(frozen v0.2 release、ENCODE HCT116-AID2 degron 派生、DESeq2 精化)。
+所有 ENCODE 扩张轴为<b>预备级(CPM/DESeq2 · 6h · 单细胞系)、候选、待人审</b>;<b>有数据 ≠ eligible</b>。
+生成:MechanismBench 状态总览 · 自包含静态页,可直接部署于 GitHub Pages(docs/)。
+</footer>
+
+</div>
+</body>
+</html>
