@@ -66,11 +66,12 @@ MED14 与 BRD4 共享 nascent↓+ATAC平 的诊断信号,靠"扰动哪个因子"
 <table>
 <tr><th>层</th><th>问的问题</th><th class="n">规模</th><th class="n">official eligible</th><th>状态</th></tr>
 <tr><td>Layer 1 — 分类</td><td>给数据,判机制类</td><td class="n">587 official + 25 baselines</td><td class="n">已成型</td><td><span class="tag t-gold">完整(可独立成文)</span></td></tr>
-<tr><td>Layer 2 — 反事实</td><td>知道机制有没有用(独立第二诊断 Q)</td><td class="n">G4 22 候选 / Hemin 8</td><td class="n">0</td><td><span class="tag t-cand">候选,待人审(正交诊断稀缺,难扩)</span></td></tr>
-<tr><td>Layer 3 — 跨情境</td><td>机制换细胞系还成立吗(同边多情境)</td><td class="n">NKX2-1 31 + BRD4 880*</td><td class="n">0</td><td><span class="tag t-cand">候选,待人审</span></td></tr>
+<tr><td>Layer 2 — 反事实</td><td>知道机制有没有用(独立第二诊断 Q)</td><td class="n">G4 22 候选 / Hemin 8</td><td class="n">0 官方<br><span class="note">(待签字)</span></td><td><span class="tag t-cand">6/8 forced-Q 过全部机器可核标准</span> · 剩人类判断:strand convention · 窗口可比 · 签字</td></tr>
+<tr><td>Layer 3 — 跨情境</td><td>机制换细胞系还成立吗(同边多情境)</td><td class="n">NKX2-1 31 + BRD4 880*</td><td class="n">0 官方<br><span class="note">(待签字)</span></td><td><span class="tag t-cand">NKX2-1 30/31 过全部机器可核标准</span> · BRD4 880(81.5% stable)候选 · 剩人类判断:binding directness · switch真伪 · 签字+import</td></tr>
 </table>
 <p class="note">* BRD4 880 = HCT116(ENCODE)+K562(GSE111463)同边双情境,81.5% stable / 163 context-switch(真 OOD 信号)。
 SMARCA5 双情境 3682 条但 52.6% stable(时间点不匹配 → 噪声,<b>单列不算干净</b>)。</p>
+<p class="lead" style="margin-top:8px"><b>关于 "0 official eligible":</b> 这是<b>治理状态,不是空</b>。按项目规则,candidate→eligible 必须经<b>具名人类签字 + 正式 v0.3 import</b>。目前 Layer 2 有 6/8、Layer 3 有 30/31 候选<b>已过全部机器可核的预注册标准</b>,只差人类签字那一步——AI 已出 first-pass provisional 审查,人审是"核对+签字"而非从零做。</p>
 
 <h2>③ 真正的多机制解释 · Multi-axis(证明了形态,数据受限)</h2>
 <table>
