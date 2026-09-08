@@ -29,6 +29,12 @@ footer{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(
 .btn.ghost{background:#fff;color:#0969da;border:1px solid #0969da}
 .btn:hover{opacity:.9}
 a.rev{color:#0969da;font-weight:600;white-space:nowrap;text-decoration:none}
+.intro{background:linear-gradient(180deg,#eef4ff,#f6f8fa);border:1px solid #b6c7f0;border-radius:12px;padding:18px 20px;margin:16px 0}
+.intro h3{margin:0 0 8px;font-size:17px}
+.intro p{margin:8px 0}
+.intro .m{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.intro .mc{flex:1;min-width:220px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 12px}
+.intro .mc b{color:#0969da}
 </style>
 </head>
 <body>
@@ -51,6 +57,23 @@ a.rev{color:#0969da;font-weight:600;white-space:nowrap;text-decoration:none}
 匹配→A、矛盾→B、都不像→inconclusive(诚实类)。<b>只看方向、不看幅度</b>(方向是二元、不可抵赖)。
 </div>
 
+<div class="intro">
+<h3>🕒 3 分钟看懂</h3>
+<p><b>已知:</b>「基因 A 调控基因 B」——这叫<b>拓扑</b>(谁管谁),我们知道很多年了。
+<b>没解决的:</b>A 到底<b>怎么</b>管 B?光看表达数据(A 高时 B 也高),几种完全不同的物理机制<b>长得几乎一样,分不出来</b>。</p>
+<div class="m">
+<div class="mc"><b>🔒 门锁(染色质门控)</b><br>A 通过开/关染色质这道"锁"来管 B。</div>
+<div class="mc"><b>🎚️ 浓度(TF 动力学)</b><br>A 靠自身浓度/结合直接调 B 的转录。</div>
+<div class="mc"><b>⏱️ 频率(转录爆发)</b><br>A 改变 B 转录"开火"的频率而非幅度。</div>
+</div>
+<p><b>为什么必须分清?</b>因为<b>药靶完全不同</b>:门锁→抑制上锁的酶(如 PRC2);浓度→调 A 的量/结合;频率→前两种药可能压根不起作用。<b>搞错机制 = 选错药靶。</b></p>
+<p><b>核心巧思(诊断性扰动):</b>找一个实验,让两种候选机制给出<b>方向相反</b>的预测——不管结果如何都能一锤定音。
+<b>PRC2 门锁比喻:</b>PRC2 是给染色质"上锁"的酶。抑制 PRC2 后——若是<b>门锁</b>机制,锁被打开、B 应<b>有反应</b>;若是<b>纯浓度</b>机制,不涉及锁、B 应<b>毫无变化</b>。
+方向相反 → "抑制 PRC2 看 B 变不变"就是天然判官:变→门锁,不变→浓度,都不像→<b>inconclusive(诚实类)</b>。<b>只看方向、不看幅度</b>。</p>
+<p><b>标签哪来?</b>不抄论文结论,而是<b>重看已公开的原始扰动数据</b>、按上面的规则自己判(见 <a href="#" onclick="document.querySelectorAll('h2')[6]&&document.querySelectorAll('h2')[6].scrollIntoView();return false;">⑧ 数据来源</a>)——别人能复现你的判断。</p>
+<p class="note"><b>诚实说明 · 为什么 PRC2 是比喻而不是数据点:</b>H3K27me3 这把锁<b>稳定、要几天才褪</b>,不匹配本基准的<b>急性窗口(30min–6h)nascent 读出</b>——急性看 PRC2 靶几乎不动,等几天又全是间接效应。
+所以<b>门锁"机制"已实现</b>(用更快的染色质因子 BRG1/BCL11A/remodeler 代理),但 <b>PRC2 这个"例子"本身抗拒急性框架</b>:它是完美教学比喻、最差数据点。</p>
+</div>
 <p class="legend">
 <span class="tag t-gold">强/官方</span>已成型可打分
 <span class="tag t-cand">候选</span>有真实数据、待人审
