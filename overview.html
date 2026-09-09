@@ -35,6 +35,9 @@ a.rev{color:#0969da;font-weight:600;white-space:nowrap;text-decoration:none}
 .intro .m{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
 .intro .mc{flex:1;min-width:220px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 12px}
 .intro .mc b{color:#0969da}
+.explain{border:1px solid var(--line);border-radius:9px;background:#f6f8fa;margin:10px 0;padding:0 14px}
+.explain summary{cursor:pointer;font-weight:600;color:#0969da;padding:11px 0;font-size:14.5px}
+.explain p{margin:8px 0;font-size:13.5px}
 </style>
 </head>
 <body>
@@ -115,6 +118,15 @@ pause-release 依赖(CDK7)、乙酰化 writer 耦合(读 H3K27ac)、频率 vs �
 </table>
 <p class="note"><b>口径:</b> 诊断能"从响应模式区分"的粗类 = <b>2</b>(染色质耦合 vs 转录直接);按"扰动因子/药靶"分的机制 = <b>~6 有数据、4 个强</b>。
 MED14 与 BRD4 共享 nascent↓+ATAC平 的诊断信号,靠"扰动哪个因子"区分 —— 报告时须说明,不等同两个独立诊断类。</p>
+<details class="explain">
+<summary>❓ 什么是 "ENCODE degron 体系"?(点开看人话版)</summary>
+<div>
+<p><b>degron = 给蛋白装一个"2–3 小时自毁开关"。</b> 老办法敲掉基因要好几天,细胞早已重新适应,分不清哪些是直接后果、哪些是连锁反应;degron 给目标蛋白贴个小标签,加一颗小分子药,细胞的"垃圾处理系统"就在 <b>2–3 小时内精准销毁它</b>——好比"让某个员工在 2 小时内凭空消失,立刻看哪些活停摆",看到的就是它<b>直接</b>负责的事。</p>
+<p><b>ENCODE 做的:</b> 在<b>同一种细胞(HCT116)</b>里,给 <b>8 个调控因子</b>(RAD21 / CTCF / SMARCA5 / BRD4 / MED14 / CDK7 / POLR2A / SUPT16H)各装一个这样的开关;对每个都"关掉 6 小时",再用<b>多台"相机"同时拍</b>关掉前后的变化:<b>转录</b>(PRO-seq)、<b>染色质开合</b>(ATAC)、<b>3D 折叠</b>(Hi-C/ChIA-PET)、<b>化学标记</b>(H3K27ac)。<b>同细胞、同开关、同时间点</b>,8 个因子横着比,没有跨研究的杂音——这在数据界很难得。</p>
+<p><b>怎么读出"机制":</b> 关掉某因子后看<b>哪台相机动了</b>——染色质开合(ATAC)变→<b>门控/重塑</b>;只有转录变、门没动→<b>浓度/动力学</b>;3D 环断→<b>looping</b>;H3K27ac 掉→<b>乙酰化耦合</b>。<b>例:</b>关 BRD4 → 转录掉、门没动 → "直接作用于转录"(coactivator);关 RAD21(黏连蛋白)→ 3D 环断 → "looping"。</p>
+<p class="note">本页 ① 表里的 MED14 / BRD4 / RAD21 / SMARCA5 / CDK7 等机制轴,就是从 ENCODE 这套"关掉前/后 + 多相机"数据,逐基因按"只看方向"的规则读出来的。</p>
+</div>
+</details>
 
 <h2>② 三层评测 · Layers(分别验收)</h2>
 <table>
