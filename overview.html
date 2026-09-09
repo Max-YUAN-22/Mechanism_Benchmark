@@ -125,6 +125,8 @@ MED14 与 BRD4 共享 nascent↓+ATAC平 的诊断信号,靠"扰动哪个因子"
 </table>
 <p class="note">* BRD4 880 = HCT116(ENCODE)+K562(GSE111463)同边双情境,81.5% stable / 163 context-switch(真 OOD 信号)。
 SMARCA5 双情境 3682 条但 52.6% stable(时间点不匹配 → 噪声,<b>单列不算干净</b>)。</p>
+<p class="note" style="margin-top:8px"><b>什么是 "25 baselines"?</b> baseline = 参照模型,用来标定任务难度与新方法好坏。含平凡基线(majority 0.403 · random 0.514)与现代模型(LogReg/RF/XGBoost/LightGBM/MLP/SVM/kNN/GP… + 7 个 pooled 变体),最佳 RF=0.759。作用:① 证明任务非平凡(平凡基线仅 0.40–0.51);② 证明未被解决(最佳仅 0.759);③ 给后续提交一个可超越的记分板。</p>
+<p class="note"><b>Layer 2 为什么这么少?</b> 不是没做,是<b>准入极严、合格数据天然稀缺</b>。Layer 2 要求同一条边上有一个<b>独立的第二诊断实验(正交 Q)</b>、两机制对它方向预测相反、且结果已公开。多数数据集只测一次扰动的响应(或同一次扰动的两个轴——不算独立 Q),公开数据里能凑出"主诊断+正交第二诊断"的边极罕见(故仅 G4/TMPyP4 22 + Hemin 8)。<b>放松此要求=灌水,会毁掉 Layer 2 的意义</b>——宁可小而真。</p>
 <p class="lead" style="margin-top:8px"><b>关于 "0 official eligible":</b> 这是<b>治理状态,不是空</b>。按项目规则,candidate→eligible 必须经<b>具名人类签字 + 正式 v0.3 import</b>。目前 Layer 2 有 6/8、Layer 3 有 30/31 候选<b>已过全部机器可核的预注册标准</b>,只差人类签字那一步——AI 已出 first-pass provisional 审查,人审是"核对+签字"而非从零做。</p>
 
 <h2>③ 真正的多机制解释 · Multi-axis(证明了形态,数据受限)</h2>
