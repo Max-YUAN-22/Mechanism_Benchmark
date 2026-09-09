@@ -52,9 +52,23 @@ a.rev{color:#0969da;font-weight:600;white-space:nowrap;text-decoration:none}
 </div>
 
 <div class="lead">
-<b>一句话:</b> 现有 GRN benchmark 评估"A 是否调控 B"(拓扑);MechanismBench 评估"A 怎么调控 B"(机制)。
-标签<b>不抄论文结论</b>——先冻结两个竞争机制的<b>方向性预测</b>,再从公开扰动数据按固定规则强制标签,
-匹配→A、矛盾→B、都不像→inconclusive(诚实类)。<b>只看方向、不看幅度</b>(方向是二元、不可抵赖)。
+<p style="margin:0 0 8px"><b>术语约定:</b> 一条调控边写作 <b>R → T</b>(R = 调控因子 / regulator,T = 靶基因 / target);
+两个相互竞争的机制假说记作 <b>机制① / 机制②</b>(例:①染色质门控 vs ②TF 浓度动力学)。<span class="note">—— 机制的 ①/② 与调控因子/靶基因是两回事,不要混。</span></p>
+
+<p style="margin:0 0 8px"><b>定位:</b> 现有基因调控网络(GRN)基准评估<b>边是否存在</b>(R→T,即"拓扑");
+<b>MechanismBench 评估已知边通过何种机制运作</b>(机制分辨),不重做拓扑。</p>
+
+<p style="margin:0 0 6px"><b>标签如何产生(非循环、可复核):</b> 对每个 <span class="mono">(R→T, 诊断性扰动)</span> 单元——</p>
+<ol style="margin:0 0 8px 20px;padding:0">
+<li><b>预注册:</b> 在<b>读取观测之前</b>,冻结机制①、机制② 各自对 T 的<b>方向性预测</b>(仅 上升 UP / 下降 DOWN / 不变 NO_CHANGE,<b>不含幅度</b>),git commit 锁定。</li>
+<li><b>观测:</b> 从<b>公开扰动数据</b>(nascent RNA / ATAC 等)读出 T 的实际响应方向。</li>
+<li><b>强制赋标(固定规则):</b>
+观测方向 <b>匹配机制①、且与机制②矛盾 → 标签 = 机制①</b>;
+匹配机制②、且与机制①矛盾 → 标签 = 机制②;
+两者皆不符 / 皆符 / 无法判定 → <b>inconclusive(诚实弃权,保留不丢弃)</b>。</li>
+</ol>
+<p style="margin:0"><b>为何只看方向:</b> "幅度多大算显著"可争论,而方向(符号)是<b>二元、可复现、不可抵赖</b>的判据。
+标签<b>不取自论文结论</b>,而由 deposited 数据按预注册规则重推——任何人可独立复核。</p>
 </div>
 
 <div class="intro">
