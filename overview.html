@@ -219,6 +219,24 @@ SMARCA5 双情境 3682 条但 52.6% stable(时间点不匹配 → 噪声,<b>单�
 </table>
 <p class="note">每条 GOLD/候选边的完整 provenance(regulator · target · accession · cell type · perturbation · timepoint · 响应值 · decision rule · tier · binding filter)在审查站每张卡片上都可见。</p>
 
+<h2>⑨ 按队友新 4 类框架整理 · Mapped to the new taxonomy</h2>
+<p class="note">新框架用<b>诊断扰动</b>定义类别。下表严格标注现有资产的<b>「定义匹配 / 诊断扰动匹配」</b>——不夸大:640 GOLD 全是急性 TF 降解,干净落在 (1);(2) 有依赖性证据但扰动不同;(3)(4) 待建。</p>
+<table>
+<tr><th>新类别(定义 · 规定扰动)</th><th>定义匹配</th><th>扰动匹配</th><th>现有可用资产</th></tr>
+<tr><td><b>(1) 直接顺式 DNA</b><br><span class="note">TF 直接占位 CRE · 扰动=TF motif 编辑 / 急性 TF 降解</span></td><td>✅</td><td>✅ 完全</td><td><b>640 GOLD 全是急性 TF 降解</b>;kinetics 296 = 最干净的 (1);MED14/CDK7 属 (1) 的 cofactor 侧(辅因子降解,注明)</td></tr>
+<tr><td><b>(2) 染色质介导</b><br><span class="note">依赖 accessibility / 重塑 / 组蛋白·DNA 修饰 · 扰动=直接改染色质状态</span></td><td>✅ 依赖性</td><td>⚠️ 部分</td><td>gating 344 满足依赖性定义,但由 <b>TF 扰动 + 染色质读出</b>得来(非 (2) 扰动);严格贴 (2) 扰动:SMARCA5(重塑)、BRD4 / H3K27ac(修饰)</td></tr>
+<tr><td><b>(3) 组合 TF</b><br><span class="note">需搭档 TF · 扰动=分别扰动互作 TF</span></td><td>—</td><td>—</td><td><span class="tag t-bad">空白</span> 未做"分别扰动两互作 TF"对比(ENCODE 多因子可作起点)</td></tr>
+<tr><td><b>(4) 调控 RNA 介导</b><br><span class="note">miRNA / lncRNA 作必要中间体 · 扰动=扰动该 RNA</span></td><td>—</td><td>—</td><td><span class="tag t-bad">空白</span> 无中间 RNA 单元</td></tr>
+</table>
+<table>
+<tr><th>新 Unit / 评测层</th><th>现状</th></tr>
+<tr><td>Unit = (TF, target, mechanism, context, perturbation, response)</td><td>✅ 640 GOLD 字段一一对应,直接可灌</td></tr>
+<tr><td>L1 Classification</td><td>✅ 587 official · 25 baselines · 最佳 macro-F1 0.759</td></tr>
+<tr><td>L2 Counterfactual</td><td>⚠️ 合成 97.8% vs 均值 50% · 真实边 G4 22 候选(eligible 0)</td></tr>
+<tr><td>L3 OOD(换细胞系 / 换 TF-gene pair)</td><td>✅ BRD4 双情境 880(81.5% stable)· 跨因子迁移 AUROC 0.476</td></tr>
+</table>
+<p class="note"><b>与队友需对齐 3 点:</b> ①"4 选 1 分类" vs "成对方向诊断";② (2) 是否必须用<b>染色质扰动</b>(决定 344 gating 算不算 (2));③ bursting(频率)并入还是保留。</p>
+
 <footer>
 数据快照均来自本仓库真实产物(frozen v0.2 release、ENCODE HCT116-AID2 degron 派生、DESeq2 精化)。
 所有 ENCODE 扩张轴为<b>预备级(CPM/DESeq2 · 6h · 单细胞系)、候选、待人审</b>;<b>有数据 ≠ eligible</b>。
