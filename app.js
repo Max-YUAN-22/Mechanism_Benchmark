@@ -75,25 +75,41 @@
     return h; }
 
   // ---------- dashboard ----------
+  var OUTCOME = {
+    gold_primary:        {field:"manual_final_decision",      fmt:function(c){return c.confirm+" confirmed · "+(c.inconclusive||0)+" flagged (ZNF143 fixed v0.3 / TRPS1 quarantined)";}},
+    launch_critical:     {field:"human_row_decision",         fmt:function(c){return c.accept+" accepted · route gates closed";}},
+    layer2_g4:           {field:"manual_layer2_decision",     fmt:function(c){return (c.eligible||0)+" counterfactual units · "+(c.inconclusive||0)+" honest non-confirm";}},
+    layer3_nkx21:        {field:"manual_layer3_decision",     fmt:function(c){return (c.eligible||0)+" stable (context-OOD) · "+(c.inconclusive||0)+" real switch (ENTPD3)";}},
+    coactivator_dependent:  {field:"human_dependence_call",   fmt:function(c){return (c.dependent||0)+" BRD4-dependent (binding-supported)";}},
+    coactivator_independent:{field:"human_dependence_call",   fmt:function(c){return (c.independent||0)+" independent · "+(c.inconclusive||0)+" needs-data";}},
+    foxo1_axisa:         {field:"manual_mechanism_decision",  fmt:function(c){return (c.confirm_candidate||0)+" confirmed · "+(c.needs_binding_data||0)+" binding-pending";}},
+    foxo1_layer3:        {field:"manual_pair_decision",       fmt:function(c){return (c.confirm_pair||0)+" stable pairs · "+(c.inconclusive||0)+" discordant";}},
+    smarca5_pregate:     {field:"human_pregate_evidence_call",fmt:function(c){return (c.confirm_pregate_evidence||0)+" evidence-confirmed · spacing+clone gates still missing";}}
+  };
+  function outcomeSummary(qid){
+    var cfg=OUTCOME[qid]; if(!cfg) return "";
+    var c={}; var baked=BAKED[qid]||{};
+    Object.keys(baked).forEach(function(uid){ var v=baked[uid][cfg.field]||"(blank)"; c[v]=(c[v]||0)+1; });
+    var l=localDecisions(qid);
+    Object.keys(l).forEach(function(uid){ if(l[uid]&&l[uid].__done){ var v=l[uid][cfg.field]||"(blank)"; c[v]=(c[v]||0)+1; } });
+    return cfg.fmt(c);
+  }
   function renderDashboard(){
     var host = el("queueList"); host.innerHTML="";
-    var tot=0;
     BUNDLE.queues.forEach(function(q){
-      var m = meta(q.id); var done = countDone(q.id); tot+=done;
+      var m = meta(q.id); var done = countDone(q.id);
       var tr=document.createElement("tr");
       tr.innerHTML =
         '<td><b>'+esc(m.title)+'</b></td>'+
-        '<td>'+esc(m.purpose)+'</td>'+
+        '<td>'+esc(outcomeSummary(q.id)||m.purpose)+'</td>'+
         '<td class="n">'+q.n+'</td>'+
-        '<td class="n">'+done+'</td>'+
         '<td><span class="badge '+m.badge[0]+'">'+esc(m.badge[1])+'</span></td>'+
         '<td><button class="btn small" data-q="'+esc(q.id)+'">Review →</button></td>';
       tr.querySelector("button").onclick=function(){ openQueue(q.id); };
       host.appendChild(tr);
     });
-    el("stReviewed").textContent = tot;
+    el("stReviewed").textContent = countDone("gold_primary")+countDone("layer2_g4")+countDone("coactivator_dependent");
   }
-
   // ---------- derived-label logic per queue ----------
   function derived(qid, ev){
     if(qid==="gold_primary"){
