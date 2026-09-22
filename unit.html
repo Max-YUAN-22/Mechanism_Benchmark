@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Anatomy of a MechanismBench Unit — MB-v0.2-0298</title>
+<title>Anatomy of a MechanismBench Unit — Evidence Cases</title>
 <style>
-:root{--ink:#1f2328;--mut:#57606a;--line:#d0d7de;--bg:#f6f8fa;--accent:#0969da;--ok:#1a7f37;--bad:#cf222e}
+:root{--ink:#1f2328;--mut:#57606a;--line:#d0d7de;--bg:#f6f8fa;--accent:#0969da;--ok:#1a7f37;--bad:#cf222e;--warn:#9a6700}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;color:var(--ink);margin:0;font-size:14px;line-height:1.55}
-.wrap{max-width:900px;margin:0 auto;padding:26px 20px 80px}
+.wrap{max-width:920px;margin:0 auto;padding:26px 20px 80px}
 h1{font-size:22px;margin:0 0 2px}
 .sub{color:var(--mut)}
 h2{font-size:15px;margin:30px 0 8px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
@@ -18,118 +18,146 @@ th{background:var(--bg);font-weight:600}
 .step h3{margin:0 0 6px;font-size:15px}
 .arrow{text-align:center;color:var(--mut);font-size:20px;margin:-4px 0}
 .bar{height:16px;border-radius:3px;background:var(--accent);min-width:2px}
-.barwrap{display:flex;align-items:center;gap:10px;margin:5px 0}
-.barwrap .lab{width:190px;font-size:13px}
-.barwrap .val{width:110px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px}
+.bar.bad{background:var(--bad)}
 .zero{height:16px;border-left:2px solid var(--mut)}
+.barwrap{display:flex;align-items:center;gap:10px;margin:5px 0}
+.barwrap .lab{width:200px;font-size:13px}
+.barwrap .val{width:150px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px}
 .big{font-size:16px;font-weight:700}
 .ok{color:var(--ok);font-weight:700}.no{color:var(--bad);font-weight:700}
 .callout{border-left:4px solid var(--ok);background:var(--bg);border-radius:6px;padding:10px 14px;margin:12px 0;font-size:13.5px}
+.callout.inc{border-left-color:var(--warn)}
 a{color:var(--accent);text-decoration:none}
 .note{color:var(--mut);font-size:12.5px}
 .mono{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}
-details{border:1px solid var(--line);border-radius:8px;padding:0 14px;margin:10px 0;background:var(--bg)}
-details summary{cursor:pointer;font-weight:600;padding:9px 0;color:var(--accent)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.tab{padding:7px 13px;border:1px solid var(--line);border-radius:6px;cursor:pointer;font-size:13px;background:var(--bg)}
+.tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn{display:inline-block;padding:8px 16px;border-radius:6px;background:var(--accent);color:#fff;text-decoration:none;font-size:13.5px;font-weight:600}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
 </style>
 </head>
 <body>
 <div class="wrap">
-
 <h1>Anatomy of a MechanismBench Unit</h1>
-<p class="sub">从一个公开实验到一个机制标签的完整证据链 · Evidence Case <span class="mono">MB-v0.2-0298</span> · frozen v0.2</p>
-<div class="callout">
-<b>RUNX1 → ENSG00000275113</b> · MCF10A · RUNX1 dTAG 3 h ·
-Label: <b>M2 · Chromatin-mediated (chromatin_gating)</b>
-<br><span class="note">这个页面回答 8 个问题:哪条边?什么扰动?竞争假设是什么?各自预测什么?实验观测到什么?观测为何能判别?标签如何产生?能否一路追回原始数据?</span>
+<p class="sub">五个代表性 Evidence Case:从公开实验到机制标签的完整证据链(含一个 honest INCONCLUSIVE)</p>
+<div class="tabs" id="tabs"></div>
+<div id="content"></div>
+<p style="margin-top:22px"><a class="btn" href="index.html#gold_primary">在审查站复核这些单元 →</a> <a class="btn ghost" href="overview.html">← 项目总览</a></p>
+<p class="note">其余 GOLD 单元按同一协议构建;每个单元的字段与本页一致(unit schema + provenance)。</p>
 </div>
-
-<div class="step"><h3>01 · Regulatory edge(既有调控关系)</h3>
-<p>已有证据确立 <b>RUNX1 → ENSG00000275113</b> 为一条调控关系(靶基因在沉积矩阵中以 Ensembl ID 标注)。</p>
-<table>
-<tr><th>TF</th><td>RUNX1</td></tr>
-<tr><th>Target</th><td>ENSG00000275113</td></tr>
-<tr><th>Context</th><td>MCF10A(人乳腺上皮)</td></tr>
-<tr><th>Tier</th><td>Gold-1B(两条响应轴齐备;无同源 binding 过滤,已在 tier 中注明)</td></tr>
-<tr><th>来源</th><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE314312" target="_blank">GSE314312(PRO-seq)</a> · <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE314301" target="_blank">GSE314301(ATAC)</a></td></tr>
-</table>
-</div>
-<div class="arrow">↓</div>
-
-<div class="step"><h3>02 · Diagnostic perturbation(为什么这个实验能判别机制)</h3>
-<p><b>急性 RUNX1 降解</b>(dTAG vs control,<b>3 h</b>);配对读出:<b>PRO-seq(nascent 转录)+ ATAC-seq(染色质可及性)</b>。</p>
-<p><b>为什么选这个扰动?</b> 因为两类候选机制在它之下给出<b>可区分的方向性预测</b>:若效应经由染色质,降解后可及性应改变;若为直接转录效应,则 nascent 应改变而可及性保持。</p>
-</div>
-<div class="arrow">↓</div>
-
-<div class="step"><h3>03 · Competing hypotheses(竞争假设与方向性预测)</h3>
-<table>
-<tr><th></th><th>H1 · Chromatin-mediated(M2)</th><th>H2 · Direct cis-regulatory(M1)</th></tr>
-<tr><td>机制</td><td>RUNX1 经维持染色质可及性调控靶基因</td><td>RUNX1 直接作用于转录机器/辅因子,不依赖可及性</td></tr>
-<tr><td>预测(ATAC)</td><td class="big">CHANGE</td><td class="big">FLAT</td></tr>
-<tr><td>预测(nascent)</td><td>可变(跟随或滞后)</td><td class="big">CHANGE</td></tr>
-</table>
-<p class="note">预测在冻结协议中预先写定;只看方向,不看幅度。</p>
-</div>
-<div class="arrow">↓</div>
-
-<div class="step"><h3>04 · Original observation(deposited 数据实测)</h3>
-<div class="barwrap"><span class="lab">ATAC log2FC</span><div style="flex:1"><div class="barwrap" style="margin:0"><div class="bar" style="width:100%;background:var(--bad)"></div></div></div><span class="val">−8.90 · CHANGE_DOWN</span></div>
-<div class="barwrap"><span class="lab">Nascent log2FC</span><div style="flex:1"><div class="zero"></div></div><span class="val">+0.08 · FLAT</span></div>
-<p style="margin:8px 0 0">观测:<b>可及性大幅下降 + nascent 转录平坦</b></p>
-<details><summary>How was the call derived?(判据展示)</summary>
-<table>
-<tr><th>轴</th><th>deposited log2FC</th><th>方向判据(预注册)</th><th>call</th></tr>
-<tr><td>ATAC</td><td>−8.898</td><td>方向显著 → CHANGE</td><td>CHANGE_DOWN</td></tr>
-<tr><td>nascent</td><td>+0.078</td><td>不显著(等价准则)→ FLAT</td><td>FLAT</td></tr>
-</table>
-<p class="note">call 由沉积数据处理协议导出;重复水平统计量见原始 accession。本基准只消费方向,不重设幅度阈值。</p>
-</details>
-</div>
-<div class="arrow">↓</div>
-
-<div class="step"><h3>05 · Derivation(标签如何强制产生)</h3>
-<table>
-<tr><th></th><th>预测</th><th>观测</th><th></th></tr>
-<tr><td><b>H1 Chromatin-mediated</b></td><td>ATAC CHANGE</td><td>ATAC CHANGE_DOWN</td><td class="ok">✓ MATCH</td></tr>
-<tr><td><b>H2 Direct cis-regulatory</b></td><td>nascent CHANGE(ATAC FLAT)</td><td>nascent FLAT</td><td class="no">✗ CONTRADICT</td></tr>
-</table>
-<p class="big" style="text-align:center">→ Derived label:<b>M2 · Chromatin-mediated(chromatin_gating)</b></p>
-<div class="callout">
-该标签<b>由沉积扰动数据 + 预注册决策规则推导而来,并非抄录源论文结论</b>。推导可由任何人按上述六步独立重放。
-</div>
-</div>
-<div class="arrow">↓</div>
-
-<div class="step"><h3>06 · Human audit(证据审计)</h3>
-<table>
-<tr><th>Check</th><th>Result</th></tr>
-<tr><td>Regulator identity</td><td class="ok">✓</td></tr>
-<tr><td>Target identity</td><td class="ok">✓</td></tr>
-<tr><td>Perturbation identity(acute dTAG,同系对照)</td><td class="ok">✓</td></tr>
-<tr><td>Context / timepoint</td><td class="ok">✓(3 h,急性窗)</td></tr>
-<tr><td>Observed response 方向可重放</td><td class="ok">✓(本页即重放)</td></tr>
-<tr><td>H1/H2 判别力</td><td class="ok">✓(预测相反)</td></tr>
-<tr><td>Derived label 符合规则</td><td class="ok">✓</td></tr>
-<tr><td>Binding 直接性</td><td class="no">— Gold-1B:无同源 ChIP(tier 已注明)</td></tr>
-</table>
-<p>Human review:<b>first-pass record 已建立(AI 底稿,max 采纳)</b>;具名第二评审待做——<a href="index.html#gold_primary">在审查站复核此单元 →</a></p>
-</div>
-
-<h2>可追溯性 checklist(8 问全答)</h2>
-<table>
-<tr><th>问题</th><th>答案位置</th></tr>
-<tr><td>哪条边?</td><td>01</td></tr>
-<tr><td>什么扰动?</td><td>02</td></tr>
-<tr><td>竞争机制?</td><td>03</td></tr>
-<tr><td>各自预测?</td><td>03</td></tr>
-<tr><td>实验结果?</td><td>04</td></tr>
-<tr><td>为何能判别?</td><td>03+04(预测相反且观测只匹配其一)</td></tr>
-<tr><td>标签如何产生?</td><td>05</td></tr>
-<tr><td>能否追回原始数据?</td><td>01 链接 → GSE314312/301;全文库 papers/</td></tr>
-</table>
-
-<p style="margin-top:22px"><a class="btn" href="index.html#gold_primary">在审查站审这条/其余 639 条 →</a> <a class="btn ghost" href="overview.html">← 返回项目总览</a></p>
-<p class="note">其余 639 个 GOLD 单元按同一协议构建;每个单元的字段与本页一致(unit schema + provenance)。</p>
-</div>
+<script>
+var CASES = {
+ runx1_gating: {
+  tab: "① Chromatin gating(RUNX1)",
+  title: "RUNX1 \u2192 ENSG00000275113", id: "MB-v0.2-0298", layer: "Layer 1 · GOLD v0.2 · Gold-1B",
+  verdict: {cls:"ok", text:"Label: M2 · Chromatin-mediated(chromatin_gating)"},
+  edge: {tf:"RUNX1", tgt:"ENSG00000275113(沉积矩阵以 Ensembl ID 标注)", ctx:"MCF10A(人乳腺上皮)", src:[["GSE314312 (PRO-seq)","GSE314312"],["GSE314301 (ATAC)","GSE314301"]], tier:"Gold-1B(两轴齐备;无同源 binding,tier 已注明)"},
+  pert: {what:"急性 RUNX1 降解(dTAG vs control)",time:"3 h",assay:"PRO-seq(nascent)+ ATAC-seq(可及性)"},
+  whydiag: "两类候选机制在本扰动下给出可区分的方向性预测:经染色质者降解后可及性应改变;直接效应者 nascent 应改变而可及性保持。",
+  hyps: {a:"Chromatin-mediated(M2):RUNX1 经维持染色质可及性调控靶基因", b:"Direct cis-regulatory(M1):RUNX1 直接作用于转录机器/辅因子"},
+  preds: [["","Hyp A · Chromatin-mediated","Hyp B · Direct cis"],["ATAC 预测","CHANGE","FLAT"],["nascent 预测","可变(跟随/滞后)","CHANGE"]],
+  obsBars: [["ATAC log2FC",-8.898,"CHANGE_DOWN",true],["Nascent log2FC",0.078,"FLAT",false]],
+  callTable: [["ATAC","-8.898","方向显著 \u2192 CHANGE","CHANGE_DOWN"],["nascent","+0.078","不显著(等价准则)\u2192 FLAT","FLAT"]],
+  match: [["Hyp A · Chromatin-mediated","ATAC CHANGE","ATAC CHANGE_DOWN","MATCH"],["Hyp B · Direct cis","nascent CHANGE(ATAC FLAT)","nascent FLAT","CONTRADICT"]],
+  label: "M2 · Chromatin-mediated(chromatin_gating)",
+  binding: "Gold-1B:无同源 ChIP(tier 已注明)"
+ },
+ runx1_kinetics: {
+  tab: "② Direct kinetics(RUNX1)",
+  title: "RUNX1 \u2192 ENSG00000121851(RAC2)", id: "MB-v0.2-0482", layer: "Layer 1 · GOLD v0.2 · Gold-1B",
+  verdict: {cls:"ok", text:"Label: M1 · Direct cis-regulatory(tf_kinetics)"},
+  edge: {tf:"RUNX1", tgt:"ENSG00000121851(RAC2)", ctx:"MCF10A", src:[["GSE314312 (PRO-seq)","GSE314312"],["GSE314301 (ATAC)","GSE314301"]], tier:"Gold-1B"},
+  pert: {what:"急性 RUNX1 降解(dTAG vs control)",time:"3 h",assay:"PRO-seq + ATAC-seq"},
+  whydiag: "同一扰动、同一判别逻辑——本例观测恰好落在另一个分支,构成 gating 案例(案例①)的镜像。",
+  hyps: {a:"Direct cis-regulatory(M1):RUNX1 直接驱动靶基因转录", b:"Chromatin-mediated(M2):效应需经染色质可及性改变"},
+  preds: [["","Hyp A · Direct cis","Hyp B · Chromatin-mediated"],["nascent 预测","CHANGE","可变"],["ATAC 预测","FLAT","CHANGE"]],
+  obsBars: [["ATAC log2FC",0.058,"FLAT",false],["Nascent log2FC",-2.585,"CHANGE_DOWN",true]],
+  callTable: [["ATAC","+0.058","不显著(等价准则)\u2192 FLAT","FLAT"],["nascent","-2.585","方向显著 \u2192 CHANGE","CHANGE_DOWN"]],
+  match: [["Hyp A · Direct cis","nascent CHANGE","nascent CHANGE_DOWN(-2.585)","MATCH"],["Hyp B · Chromatin","ATAC CHANGE","ATAC FLAT(+0.058)","CONTRADICT"]],
+  label: "M1 · Direct cis-regulatory(tf_kinetics)",
+  binding: "Gold-1B:无同源 ChIP(tier 已注明)"
+ },
+ brd4_dep: {
+  tab: "③ BRD4 dependent",
+  title: "BRD4 \u2192 ADI1", id: "COACT-BD-0001", layer: "Layer 2 · Coactivator candidate(BRD4 dependent)",
+  verdict: {cls:"ok", text:"Label: BRD4-dependent(binding-supported candidate)"},
+  edge: {tf:"BRD4(coactivator/reader)", tgt:"ADI1", ctx:"K562", src:[["GSE111463 (SLAM-seq AID)","GSE111463"],["ENCODE BRD4 ChIP (ENCSR583ACG)","ENCSR583ACG"]], tier:"binding-supported:promoter \u00b12 kb,\u22652/3 IDR sets"},
+  pert: {what:"急性 BRD4 降解(AID)",time:"SLAM-seq 急性窗",assay:"SLAM-seq(nascent)+ BRD4 ChIP"},
+  whydiag: "结合支持的靶基因在 BRD4 降解后 nascent 显著下降 \u2192 依赖侧;对照侧(结合但 NO_CHANGE)构成诊断对比。",
+  hyps: {a:"BRD4-dependent:转录需要 BRD4(降解 \u2192 nascent DOWN)", b:"BRD4-independent:降解后 nascent NO_CHANGE"},
+  preds: [["","Hyp A · Dependent","Hyp B · Independent"],["nascent 预测","DOWN","NO_CHANGE"]],
+  obsBars: [["Nascent log2FC",-1.721,"DOWN (padj 4.9e-4)",true]],
+  callTable: [["nascent","-1.721","padj=4.9e-4 < 0.05 \u2192 显著下降","DOWN"]],
+  match: [["Hyp A · Dependent","nascent DOWN","DOWN (-1.72)","MATCH"],["Hyp B · Independent","NO_CHANGE","DOWN","CONTRADICT"]],
+  label: "BRD4-dependent(candidate;官方升格待双人审)",
+  binding: "A_promoter_2kb · 2/3 IDR sets(ENCSR583ACG)"
+ },
+ combo_ctcf_rad21: {
+  tab: "④ Combinatorial(CTCF–RAD21)",
+  title: "CTCF + RAD21 \u2192 FAM171A1", id: "CTCF-RAD21::FAM171A1", layer: "M3 · Combinatorial TF(candidate)",
+  verdict: {cls:"ok", text:"Label: BOTH-required(组合依赖候选)"},
+  edge: {tf:"CTCF + RAD21(cohesin)", tgt:"FAM171A1", ctx:"HCT116(ENCODE AID2)", src:[["ENCODE RAD21 degron","ENCSR703UYN"],["ENCODE CTCF degron","ENCSR889SZI"]], tier:"同体系分别扰动;无双扰动 epistasis(代理口径已注明)"},
+  pert: {what:"CTCF 与 RAD21 各自单独急性降解(AID2,6 h)",time:"6 h",assay:"PRO-seq(两套平行实验)"},
+  whydiag: "组合类的诊断形态:分别扰动互作的两因子,看靶基因依赖谁、是否两者都需要。",
+  hyps: {a:"Combinatorial:需 CTCF 与 RAD21 共同在场(两者单独扰动均 \u2192 DOWN)", b:"Single-factor:仅其中一个因子足以维持(另一个扰动 \u2192 NO_CHANGE)"},
+  preds: [["","Hyp A · Both required","Hyp B · Single sufficient"],["RAD21 降解","DOWN","NO_CHANGE"],["CTCF 降解","DOWN","DOWN"]],
+  obsBars: [["RAD21 降解 \u2192 FAM171A1 nascent",0,"DEPENDENT",true],["CTCF 降解 \u2192 FAM171A1 nascent",0,"DEPENDENT",true]],
+  callTable: [["RAD21 AID","DESeq2 padj<0.05, lfc<0","显著下降","DEPENDENT"],["CTCF AID","DESeq2 padj<0.05, lfc<0","显著下降","DEPENDENT"]],
+  match: [["Hyp A · Both required","两次单独扰动均 DOWN","均 DOWN","MATCH"],["Hyp B · Single sufficient","一侧 NO_CHANGE","未观察到","CONTRADICT"]],
+  label: "BOTH-required combinatorial(候选;重叠依赖代理,严格 epistasis 需双扰动)",
+  binding: "架构因子对;CTCF/RAD21 互作有先例文献(Luan 2021;Ba 2020)"
+ },
+ hbg1_inconclusive: {
+  tab: "⑤ INCONCLUSIVE(BCL11A→HBG1)",
+  title: "BCL11A \u2192 HBG1", id: "BCL11A::HBG1", layer: ".derived-vs-stated 旗舰案例(未进入 benchmark)",
+  verdict: {cls:"no", text:"Label: INCONCLUSIVE —— 诚实弃权,未强行归类"},
+  edge: {tf:"BCL11A(repressor;临床镰变疗法的核心靶)", tgt:"HBG1(\u03b3-globin)", ctx:"HUDEP-2(dTAG 系)", src:[["GSE194345 (PRO-seq)","GSE194345"],["GSE194339 (ATAC)","GSE194339"]], tier:"领域最经典的 gating 主张(源研究两篇子系列专门研究 HBG1/2)"},
+  pert: {what:"急性 BCL11A 降解(dTAG)",time:"ATAC 4 h / PRO-seq 3 h",assay:"ATAC + PRO-seq(双克隆)"},
+  whydiag: "这是基准最重要的展示:连领域最著名的机制主张,在预注册证据标准下也必须诚实弃权。",
+  hyps: {a:"Chromatin-mediated(gating 主张):预测 ATAC DOWN", b:"Direct kinetics:预测 nascent 改变"},
+  preds: [["","Hyp A · Gating","Hyp B · Direct"],["ATAC 预测","DOWN","FLAT"],["nascent 预测","可变","DOWN"]],
+  obsBars: [["ATAC log2FC",-0.72,"方向与 gating 一致…",true],["显著性","—","Welch p = 0.33(预注册要求 p<0.20)\u2192 FAIL",false]],
+  callTable: [["ATAC","-0.72","方向匹配 BUT Welch p=0.33 \u2265 0.20","UNRESOLVED"],["nascent","borderline","不满足判别","UNRESOLVED"]],
+  match: [["Hyp A · Gating","ATAC DOWN(显著)","方向对但 p=0.33 不达标","NOT FORCED"],["Hyp B · Direct","—","borderline","NOT FORCED"]],
+  label: "INCONCLUSIVE(两假设均未达证据门槛 \u2192 保留不强行)",
+  binding: "derived_inconclusive_vs_stated_positive —— 反注水机制对领域最著名主张的运作实例"
+ }
+};
+var ORDER=["runx1_gating","runx1_kinetics","brd4_dep","combo_ctcf_rad21","hbg1_inconclusive"];
+function geo(a){return "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc="+a;}
+function enc(a){return "https://www.encodeproject.org/experiments/"+a+"/";}
+function bars(obs){return obs.map(function(b){
+  var mag=Math.min(Math.abs(b[1])/9,1); var w=Math.max(4,Math.round(mag*420));
+  var bar=b[1]===0?'<div class="zero"></div>':'<div class="bar'+(b[3]?'':' bad')+'" style="width:'+w+'px"></div>';
+  return '<div class="barwrap"><span class="lab">'+b[0]+'</span><div style="flex:1">'+bar+'</div><span class="val">'+b[2]+'</span></div>';}).join("");}
+function render(key){
+  var c=CASES[key];
+  document.querySelectorAll(".tab").forEach(function(t){t.classList.toggle("on",t.dataset.k===key);});
+  var h="";
+  h+='<div class="callout '+(c.verdict.cls==="ok"?"":"inc")+'"><b>'+c.verdict.text+"</b><br><span class='note'>"+c.id+" · "+c.layer+"</span></div>";
+  h+='<div class="step"><h3>01 · Regulatory edge</h3><table><tr><th>TF / 因子</th><td>'+c.edge.tf+"</td></tr><tr><th>Target</th><td>"+c.edge.tgt+"</td></tr><tr><th>Context</th><td>"+c.edge.ctx+"</td></tr><tr><th>Tier / 口径</th><td>"+c.edge.tier+"</td></tr><tr><th>来源</th><td>"+c.edge.src.map(function(s){var l=s[1].indexOf("ENCSR")===0?enc(s[1]):geo(s[1]);return '<a href="'+l+'" target="_blank">'+s[0]+"</a>";}).join(" · ")+"</td></tr></table></div>";
+  h+='<div class="arrow">\u2193</div>';
+  h+='<div class="step"><h3>02 · Diagnostic perturbation</h3><p><b>'+c.pert.what+"</b> · "+c.pert.time+" · "+c.pert.assay+"</p><p><b>为什么此扰动可判别?</b> "+c.whydiag+"</p></div>";
+  h+='<div class="arrow">\u2193</div>';
+  h+='<div class="step"><h3>03 · Competing mechanism hypotheses(竞争机制假设)</h3><p><b>Hypothesis A:</b> '+c.hyps.a+'</p><p><b>Hypothesis B:</b> '+c.hyps.b+"</p>";
+  if(c.preds) h+='<table><tr>'+c.preds[0].map(function(x){return "<th>"+x+"</th>";}).join("")+"</tr>"+c.preds.slice(1).map(function(r2){return "<tr>"+r2.map(function(x){return "<td>"+x+"</td>";}).join("")+"</tr>";}).join("")+"</table>";
+  h+='<p class="note">编号仅为行文方便;类别间的判别靠方向预测,不靠 A/B 标签本身。</p></div>';
+  h+='<div class="arrow">\u2193</div>';
+  h+='<div class="step"><h3>04 · Observed response(deposited 实测)</h3>'+bars(c.obsBars);
+  h+='<details><summary>How were the calls derived?(判据展示)</summary><table><tr><th>轴/因子</th><th>数值</th><th>预注册判据</th><th>call</th></tr>'+c.callTable.map(function(r2){return "<tr>"+r2.map(function(x){return "<td>"+x+"</td>";}).join("")+"</tr>";}).join("")+"</table><p class='note'>方向性协议:只消费方向;重复水平统计见原始 accession。</p></details></div>";
+  h+='<div class="arrow">\u2193</div>';
+  h+='<div class="step"><h3>05 · Derivation</h3><table><tr><th></th><th>预测</th><th>观测</th><th></th></tr>'+c.match.map(function(r2){return "<tr><td><b>"+r2[0]+"</b></td><td>"+r2[1]+"</td><td>"+r2[2]+'</td><td class="'+(r2[3]==="MATCH"?"ok":"no")+'">'+(r2[3]==="MATCH"?"\u2713 MATCH":"\u2717 "+r2[3])+"</td></tr>";}).join("")+'</table><p class="big" style="text-align:center">\u2192 '+c.verdict.text+"</p>";
+  h+='<div class="callout'+(key==="hbg1_inconclusive"?" inc":"")+'">该标签由沉积扰动数据 + 预注册判别规则推导,<b>并非抄录源论文结论</b>,也<b>不宣称唯一真实因果解释</b>——它表示在预注册规则下最被证据支持的机制类别。任何人可按本页六步独立重放。'+(key==="hbg1_inconclusive"?"<br><br>本例即 honest abstention 的展示:预测方向碰巧一致(\u201c故事很顺\u201d)不足以达标——判别必须由预注册的证据门槛强制。":"")+"</div></div>";
+  h+='<div class="arrow">\u2193</div>';
+  h+='<div class="step"><h3>06 · Human audit</h3><table><tr><th>Check</th><th>Result</th></tr><tr><td>Identity / perturbation / context / timepoint</td><td class="ok">\u2713</td></tr><tr><td>Observed response 可重放</td><td class="ok">\u2713(本页)</td></tr><tr><td>判别力 / 规则符合</td><td class="ok">\u2713</td></tr><tr><td>Directness / binding</td><td class="no">'+c.binding+"</td></tr></table><p>Human review:first-pass record 已建立;具名第二评审待做 \u2192 <a href='index.html#gold_primary'>审查站复核</a></p></div>";
+  el=document.getElementById("content"); el.innerHTML=h;
+  window.scrollTo(0,0);
+}
+var tabs=ORDER.map(function(k){return '<div class="tab" data-k="'+k+'" onclick="render(\''+k+'\')">'+CASES[k].tab+"</div>";}).join("");
+document.getElementById("tabs").innerHTML=tabs;
+var u=new URLSearchParams(location.search).get("unit");
+render(CASES[u]?u:"runx1_gating");
+</script>
 </body>
 </html>

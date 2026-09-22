@@ -249,7 +249,9 @@
     var tri = { clean: '<span class="badge b-official">🟢 CLEAN — quick confirm</span>', needs: '<span class="badge b-cand">🟡 NEEDS REVIEW</span>', blocked: '<span class="badge b-pregate">🔴 BLOCKED — exclude/inconclusive</span>' }[t];
     el("triageBadge").innerHTML = tri;
     var edge = row.evidence["Target"] ? ((row.evidence["Regulator"] || row.evidence["Coactivator"] || "") + " → " + row.evidence["Target"]) : (row.evidence["Edge"] || "");
-    el("edgeName").textContent = edge;
+    var CURATED = { "MB-v0.2-0298":"runx1_gating", "MB-v0.2-0482":"runx1_kinetics", "COACT-BD-0001":"brd4_dep" };
+    var chainLink = CURATED[row.id] ? ' <a href="unit.html?unit=' + CURATED[row.id] + '" target="_blank">[View Evidence Chain →]</a>' : "";
+    el("edgeName").innerHTML = esc(edge) + chainLink;
     var d = decisionsFor(q.id)[row.id];
     if (d && d.__done) { el("doneTag").textContent = d.__baked ? "FIRST-PASS RECORD" : "REVIEWED"; el("doneTag").classList.remove("hidden"); }
     else { el("doneTag").classList.add("hidden"); }
