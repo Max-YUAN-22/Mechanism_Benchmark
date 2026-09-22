@@ -5,6 +5,7 @@
 (function () {
   "use strict";
   var BUNDLE = (window.REVIEW_QUEUES || { queues: [] });
+  var BAKED = (window.REVIEW_RECORDS || {});
   var LSKEY = "mechbench_review_v1";
   var state = { queue: null, idx: 0, onlyUndone: false };
 
@@ -12,7 +13,12 @@
   function store() { try { return JSON.parse(localStorage.getItem(LSKEY)) || {}; } catch (e) { return {}; } }
   function saveStore(s) { localStorage.setItem(LSKEY, JSON.stringify(s)); }
   function reviewerId() { return (document.getElementById("reviewerId").value || "").trim(); }
-  function decisionsFor(qid) { var s = store(); s[qid] = s[qid] || {}; return s[qid]; }
+  function localDecisions(qid) { var s = store(); s[qid] = s[qid] || {}; return s[qid]; }
+  function decisionsFor(qid) {   // baked first-pass records; local edits override
+    var b = BAKED[qid] || {}, l = localDecisions(qid), m = {};
+    Object.keys(b).forEach(function(k){ m[k] = Object.assign({}, b[k], { __baked: true }); });
+    Object.keys(l).forEach(function(k){ m[k] = l[k]; });
+    return m; }
   function unitDone(qid, uid) { var d = decisionsFor(qid)[uid]; return !!(d && d.__done); }
   function countDone(qid) { var d = decisionsFor(qid), n = 0; for (var k in d) if (d[k] && d[k].__done) n++; return n; }
 
@@ -197,7 +203,9 @@
     el("unitId").textContent=row.id||"(no id)";
     var edge = row.evidence["Target"]? ( (row.evidence["Regulator"]||row.evidence["Coactivator"]||"")+" → "+row.evidence["Target"] ) : (row.evidence["Edge"]||"");
     el("edgeName").textContent=edge;
-    el("doneTag").classList.toggle("hidden",!unitDone(q.id,row.id));
+    var _d=decisionsFor(q.id)[row.id];
+      if(_d && _d.__done){ el("doneTag").textContent = _d.__baked ? "FIRST-PASS RECORD" : "REVIEWED"; el("doneTag").classList.remove("hidden"); }
+      else el("doneTag").classList.add("hidden");
     var done=countDone(q.id), pct=q.n?Math.round(done/q.n*100):0;
     el("progress").textContent="unit "+(state.idx+1)+" / "+q.n+" · "+done+" reviewed ("+pct+"%)";
     el("pbar").style.width=pct+"%";
