@@ -157,7 +157,27 @@ function render(key){
 var tabs=ORDER.map(function(k){return '<div class="tab" data-k="'+k+'" onclick="render(\''+k+'\')">'+CASES[k].tab+"</div>";}).join("");
 document.getElementById("tabs").innerHTML=tabs;
 var u=new URLSearchParams(location.search).get("unit");
+var focus=new URLSearchParams(location.search).get("focus");
 render(CASES[u]?u:"runx1_gating");
+if(focus==="label"){
+  var box=document.createElement("div");
+  box.className="callout";
+  box.innerHTML="<b>How is a MechanismBench label generated?——七步管线(与下方 RUNX1 实例逐步对应)</b>"+
+    "<table style=\"margin-top:8px\"><tr><th>#</th><th>步骤</th><th>本例中的值(RUNX1 gating)</th></tr>"+
+    [["1","既有调控边","RUNX1 \u2192 ENSG00000275113 · MCF10A"],
+     ["2","诊断性扰动","RUNX1 dTAG 3h;配对 PRO-seq + ATAC"],
+     ["3","竞争机制假设","Hyp A 染色质介导 vs Hyp B 直接顺式"],
+     ["4","方向性预测(预注册)","A: ATAC CHANGE / B: ATAC FLAT+nascent CHANGE"],
+     ["5","观测响应(deposited)","ATAC \u22128.90 CHANGE_DOWN · nascent +0.08 FLAT"],
+     ["6","决策规则(方向性)","仅匹配其一 \u2192 判该类;都不匹配 \u2192 INCONCLUSIVE"],
+     ["7","机制标签","M2 chromatin_gating"]]
+    .map(function(r2){return "<tr>"+r2.map(function(x){return "<td>"+x+"</td>";}).join("")+"</tr>";}).join("")+"</table>"+
+    "<p class='note'>同一条链对所有 unit 成立;切换顶部 tab 可看另外四个案例(含一个 INCONCLUSIVE)。</p>";
+  var content=document.getElementById("content");
+  content.parentNode.insertBefore(box,content);
+  var det=content.querySelector("details"); if(det) det.open=true;
+  setTimeout(function(){ var d=content.querySelector(".step:nth-of-type(5)"); if(d) d.scrollIntoView({behavior:"smooth"}); },80);
+}
 </script>
 </body>
 </html>

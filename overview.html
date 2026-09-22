@@ -43,10 +43,10 @@ footer{margin-top:44px;color:var(--mut);font-size:12px;border-top:1px solid var(
 
 <div class="qa" style="margin-top:12px">
 <div><b>Why?</b><br>同一个观测边可有不同机制:<br><span class="mono">TF → Gene<br>&nbsp;&nbsp;├ M1 Direct cis<br>&nbsp;&nbsp;├ M2 Chromatin<br>&nbsp;&nbsp;├ M3 Combinatorial<br>&nbsp;&nbsp;└ M4 Regulatory RNA<br>哪一条?</span></div>
-<div><b>入口</b><br>
-<a class="btn" href="unit.html">Explore a benchmark unit</a><br><br>
-<a class="btn ghost" href="unit.html#derivation-section" onclick="void(0)">Understand label generation</a><br><br>
-<a class="btn ghost" href="#5-results">Browse dataset &amp; results</a></div>
+<div><b>三个入口(各自不同)</b><br>
+<a class="btn" href="unit.html?unit=runx1_gating">Explore a benchmark unit</a><br><span class="note">交互式案例:RUNX1 完整证据链</span><br><br>
+<a class="btn ghost" href="unit.html?focus=label">Understand label generation</a><br><span class="note">标签如何从实验推导:七步管线 + 判据</span><br><br>
+<a class="btn ghost" href="#results">Browse dataset &amp; results</a><br><span class="note">本页下方:已验证数字与三层状态</span></div>
 <div></div>
 </div>
 <p style="margin:12px 0 0"><a class="btn" href="unit.html" style="color:#fff">🔍 See one benchmark unit — 完整证据链演示(A unity demo: experiment → label)</a></p>
@@ -94,7 +94,7 @@ footer{margin-top:44px;color:var(--mut);font-size:12px;border-top:1px solid var(
 <tr><td>Layer 3 · OOD generalization</td><td><b>Context-OOD</b>:换细胞系、机制不变;<b>Edge-OOD</b>:换 TF–gene 对、机制不变</td><td>Context-OOD candidate:NKX2-1 双细胞系 27 稳定 + 1 切换;BRD4 HCT116+K562 880(81.5% 稳定)。Edge-OOD:跨因子迁移 median AUROC 0.476</td></tr>
 </table>
 
-<h2>5 · Results(已验证数字)</h2>
+<h2 id="results">5 · Results(已验证数字)</h2>
 <table>
 <tr><th>项目</th><th class="n">数值</th><th>说明</th></tr>
 <tr><td>Layer 1 · 最佳 baseline(within-regulator RF)</td><td class="n">macro-F1 0.759</td><td>平凡基线 0.40–0.51;任务非平凡且未解决</td></tr>
