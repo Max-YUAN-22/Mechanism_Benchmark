@@ -3,35 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MechanismBench — Benchmark Release</title>
+<title>MechanismBench — Benchmark Release v0.2</title>
 <style>
 :root{--ink:#1f2328;--mut:#57606a;--line:#d0d7de;--bg:#f6f8fa;--accent:#0969da}
-*{box-sizing:border-box}
-body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;color:var(--ink);margin:0;line-height:1.55;background:#fff}
-.wrap{max-width:1080px;margin:0 auto;padding:32px 22px 90px}
-h1{font-size:25px;margin:0 0 2px}
-h2{font-size:18px;margin:36px 0 8px;padding-top:16px;border-top:2px solid var(--line)}
-h3{font-size:15px;margin:16px 0 4px}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;color:var(--ink);margin:0;font-size:14.5px;line-height:1.6;background:#fff}
+.wrap{max-width:960px;margin:0 auto;padding:30px 22px 90px}
+h1{font-size:24px;margin:0 0 2px}
+h2{font-size:17px;margin:36px 0 8px;padding-top:16px;border-top:1px solid var(--line)}
+h3{font-size:14.5px;margin:14px 0 4px}
 .sub{color:var(--mut);margin:0}
 table{border-collapse:collapse;width:100%;font-size:13.5px;margin:8px 0}
 th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
 th{background:var(--bg);font-weight:600}
-td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
 .note{color:var(--mut);font-size:12.5px}
 .mono{font-family:ui-monospace,Menlo,monospace;font-size:12px}
-.statusbar{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:14px 0}
-.statusbar div{flex:1;min-width:200px;padding:9px 13px;background:var(--bg);border-right:1px solid var(--line);font-size:13px}
-.statusbar div:last-child{border-right:none}
-.statusbar b{display:block;font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
-.qa{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
-.qa div{flex:1;min-width:230px;border:1px solid var(--line);border-radius:8px;padding:11px 13px}
-.qa b{color:var(--accent);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
-.cat{margin:10px 0;padding:10px 14px;border-left:3px solid var(--line);background:var(--bg)}
-.cat b{font-size:14px}
+.frozen{display:inline-block;padding:2px 10px;border:1px solid var(--ink);border-radius:4px;font-size:12px;font-weight:700;letter-spacing:.04em}
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
-details{border:1px solid var(--line);border-radius:8px;background:var(--bg);margin:10px 0;padding:0 14px}
-details summary{cursor:pointer;font-weight:600;color:var(--accent);padding:10px 0}
+.btn{display:inline-block;padding:7px 14px;border-radius:6px;background:var(--accent);color:#fff;font-size:13.5px;font-weight:600}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+.pipeline{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 16px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.9}
+.callout{border-left:4px solid var(--accent);background:var(--bg);border-radius:6px;padding:10px 14px;margin:12px 0}
 footer{margin-top:44px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
 </style>
 </head>
@@ -39,205 +32,106 @@ footer{margin-top:44px;color:var(--mut);font-size:12px;border-top:1px solid var(
 <div class="wrap">
 
 <h1>MechanismBench</h1>
-<p class="sub">Mechanism-resolved benchmark for TF–gene regulation · 机制分辨的 TF–基因调控基准</p>
-
-<div class="qa" style="margin-top:12px">
-<div><b>Why?</b><br>同一个观测边可有不同机制:<br><span class="mono">TF → Gene<br>&nbsp;&nbsp;├ M1 Direct cis<br>&nbsp;&nbsp;├ M2 Chromatin<br>&nbsp;&nbsp;├ M3 Combinatorial<br>&nbsp;&nbsp;└ M4 Regulatory RNA<br>哪一条?</span></div>
-<div><b>三个入口(各自不同)</b><br>
-<a class="btn" href="unit.html?unit=runx1_gating">Explore a benchmark unit</a><br><span class="note">交互式案例:RUNX1 完整证据链</span><br><br>
-<a class="btn ghost" href="unit.html?focus=label">Understand label generation</a><br><span class="note">标签如何从实验推导:七步管线 + 判据</span><br><br>
-<a class="btn ghost" href="#results">Browse dataset &amp; results</a><br><span class="note">本页下方:已验证数字与三层状态</span></div>
-<div></div>
-</div>
-<p style="margin:12px 0 0"><a class="btn" href="unit.html" style="color:#fff">🔍 See one benchmark unit — 完整证据链演示(A unity demo: experiment → label)</a></p>
-<div class="qa">
-<div><b>What</b><br>在已知调控边 (R→T) 上,度量其<b>运作机制</b>(mechanism category),而非仅度量边是否存在。</div>
-<div><b>How</b><br><b>Mechanism-diagnostic perturbation</b> + 预注册方向性规则生成标签(deposited 数据重推,不取自论文结论)。</div>
-<div><b>Tasks</b><br>Layer 1 · Classification &nbsp;·&nbsp; Layer 2 · Counterfactual response &nbsp;·&nbsp; Layer 3 · OOD generalization。</div>
-<div><b>Validated</b><br>587 official units · 冻结 folds · 25 baselines · 最佳 RF macro-F1 <b>0.759</b> · frozen <b>v0.2</b>。</div>
-</div>
-
-<div class="statusbar">
-<div><b>Frozen benchmark</b>v0.2(640 GOLD / 587 official)</div>
-<div><b>Current extensions</b>v0.3 proposed(修正与扩张,待审)</div>
-<div><b>Layer 2 / 3</b>candidate · pending human review</div>
-<div><b>Integrity</b>No proposed extension modifies v0.2</div>
-</div>
-
-<div class="releaserule" style="border-left-color:var(--warn)">
-<b>数字关系(一次说清):</b>
-<b>640</b> = GOLD audit pool(5 因子全审计池);
-<b>587</b> = official scored units(质量过滤后可打分者;TRPS1 53 已隔离出打分,待裁决);
-<b>2,774</b> = 全部 9 个评审队列总行数(640 GOLD + 50 launch + 22 L2 + 28 L3 + 51 + 1071 + 729 + 76 + 107,含 candidate 队列)。
-三者口径不同,不冲突。
-</div>
-
-<h2 id="contents">0 · Current release contents —— v0.2 里有什么、什么在建设中</h2>
-<p><a class="btn" href="MechanismBench_v0.2_handoff.xlsx" download>⬇ 下载总表 Excel(MechanismBench_v0.2_handoff.xlsx · 13 sheets · 全部队列+判定+文献+问题标注)</a></p>
-
-<div class="qa">
-<div><b>✅ 已冻结、可直接使用</b><br>
-640 GOLD units(587 official 打分集)<br>
-冻结 folds + 确定性 scorer<br>
-25 baselines(最佳 RF macro-F1 0.759)<br>
-587/587 标签可重推(v0.3 修正采纳后)<br>
-预注册判别规则 + unit schema<br>
-Release hashes / SHA256SUMS</div>
-<div><b>🚧 建设中(管线已就位,可认领)</b><br>
-M3 组合 TF(3 组已建:91/55/146)<br>
-M4 调控 ncRNA(源已锁定,单元待建)<br>
-Layer 2 反事实(12 单元候选)<br>
-Layer 3 OOD(NKX2-1 27+1 · BRD4 880)<br>
-新 contexts / 新 perturbation 数据集<br>
-foundation-model baseline</div>
-<div><b>🤝 可认领的方向</b><br>
-Layer 1 标签复核(按 ROP)<br>
-M3 扩组(ENCODE 对 + 文献组)<br>
-M4 eRNA/miRNA 单元化<br>
-FM baseline / split 审计<br>
-第二评审签字</div>
-</div>
-
-<h3 style="margin:16px 0 4px">v0.2 已就绪组件清单</h3>
-<table>
-<tr><th style="width:55%">组件</th><th>仓库位置(mechanism-benchmark,分支 mechanismbench-expansion)</th></tr>
-<tr><td>587 official units(+640 GOLD audit pool)</td><td><span class="mono">data/processed/benchmark_release/gold_labels_v0.2.csv</span></td></tr>
-<tr><td>Unit-level evidence schema + provenance 字段</td><td><span class="mono">gold_labels_v0.2.csv(18 列)</span>;演示见 <a href="unit.html">unit.html</a></td></tr>
-<tr><td>Mechanism ontology(M1–M4)+ 诊断扰动逻辑</td><td><span class="mono">reports/framework_final_for_senior_handoff.md</span></td></tr>
-<tr><td>Preregistered decision rules(方向性;NO_CHANGE 等价准则)</td><td><span class="mono">reports/prediction_specification_*.md</span></td></tr>
-<tr><td>Review / adjudication console(9 队列,首审底稿内置)</td><td><a href="index.html">本站 index.html</a> + <span class="mono">review_sessions/</span></td></tr>
-<tr><td>Deterministic scorer(已复现 0.759/0.752/0.621)</td><td><span class="mono">src/benchmark/score_submission.py</span></td></tr>
-<tr><td>Reproducibility script(reproduce.sh)+ SHA256SUMS</td><td><span class="mono">data/processed/benchmark_release/</span></td></tr>
-<tr><td>41-source literature inventory(含 accession 实测)</td><td><span class="mono">master_paper_inventory_v0.4.csv</span></td></tr>
-<tr><td>15 篇全文库(已归档标注)</td><td><span class="mono">data/raw/papers/ + PAPERS_INDEX.md</span></td></tr>
-<tr><td>Candidate expansion pipeline(Seed→Expand→Screen→Adjudicate)</td><td><span class="mono">reports/four_category_literature_inventory.md</span></td></tr>
-<tr><td>Baseline evaluation(25 模型记分板)</td><td><span class="mono">modern_baseline_primary_summary_v0.3.csv</span></td></tr>
-</table>
-
-<h3 style="margin:16px 0 4px">九问速查</h3>
-<table>
-<tr><th>#</th><th>问题</th><th>答案位置</th></tr>
-<tr><td>1</td><td>形式化了什么问题?</td><td>顶部 What/How 卡 + 第 2 节</td></tr>
-<tr><td>2</td><td>unit 是什么?</td><td>第 3 节 + <a href="unit.html">unit.html</a></td></tr>
-<tr><td>3</td><td>哪些已冻结?</td><td>本节“已冻结”栏</td></tr>
-<tr><td>4</td><td>标签怎么推导?</td><td>第 2 节 + <a href="unit.html?focus=label">label generation</a></td></tr>
-<tr><td>5</td><td>证据在哪?</td><td>各单元 evidence case(审查站)</td></tr>
-<tr><td>6</td><td>审了什么、谁来审?</td><td>第 6 节 + ROP(底部折叠)</td></tr>
-<tr><td>7</td><td>能复现什么?</td><td>第 7 节</td></tr>
-<tr><td>8</td><td>什么没解决?</td><td>“建设中”栏 + Known issues(底部折叠)</td></tr>
-<tr><td>9</td><td>能接着做什么?</td><td>本节“可认领的方向”</td></tr>
-</table>
-
-<h2>1 · Mechanisms — 四类机制分类(顶层 taxonomy)</h2>
-<p>调控机制按以下四类组织(<b>mechanism category</b>)。各诊断轴(axis)是类别内的具体实现,不是独立的一级类别。</p>
-<table>
-<tr><th style="width:19%">Category</th><th style="width:30%">定义</th><th>Diagnostic axes(类内实例)</th></tr>
-<tr><td>M1 · Direct cis-regulatory DNA</td><td>TF 直接占据启动子/增强子等顺式元件,经转录机器或辅因子调控靶基因</td><td>acute TF degradation(ZNF143 / BCL11A / RUNX1 / PAX3-FOXO1 / TRPS1 / TAL1 等);Mediator(MED14)与 BET reader(BRD4)辅因子轴</td></tr>
-<tr><td>M2 · Chromatin-mediated</td><td>调控效应依赖染色质可及性、核小体重塑或组蛋白/DNA 修饰</td><td>chromatin gating;remodeler 轴(SMARCA5 / BRG1);组蛋白修饰轴(H3K27ac,八因子)</td></tr>
-<tr><td>M3 · Combinatorial TF</td><td>须与另一 TF 互作方能产生调控效应</td><td>互作对组:CTCF–RAD21、BRD4–CDK7、CDK7–POLR2A(已建);OCT4–SOX2–NANOG、YAP–AP-1/TEAD(文献组)</td></tr>
-<tr><td>M4 · Regulatory ncRNA-mediated</td><td>miRNA、lncRNA 或 eRNA 作为 TF 与靶基因间的必要中间体</td><td>eRNA 轴(Gorbovytska 2022,PEARL 2021);miRNA 轴(miR-155、miR-34a/p53)——单元构建中</td></tr>
-</table>
-<details><summary>示例说明:PRC2 与诊断窗口(mechanism-diagnostic 的 illustrative example)</summary>
-<p>PRC2 抑制是"机制诊断扰动"的经典示意:若边为 M2(锁被开),靶应响应;若为 M1,则不应响应。但 H3K27me3 更替慢于本基准的急性诊断窗(30 min–6 h),故 PRC2 目前不作为 acute benchmark 的数据点——这体现对实验设计边界的界定,而非遗漏。</p>
-</details>
-
-<h2>2 · Diagnostic Perturbations — 方法核心</h2>
-<p><b>Mechanism-diagnostic perturbations</b> are selected such that competing mechanistic explanations make distinguishable predictions about the target-gene response. For each regulatory edge, perturbations are curated from published literature and public datasets, prioritizing interventions with experimentally validated effects on the relevant TF, cis-regulatory element, chromatin state, TF–TF interaction, or regulatory RNA.</p>
-<p>Where two candidate mechanisms (H1, H2) make opposing directional predictions, the observed target response is used to derive a mechanism label under a <b>preregistered decision rule</b>: direction-only (UP / DOWN / NO_CHANGE, magnitude-agnostic); a response satisfying neither hypothesis is marked <b>inconclusive</b> and retained, never forced. Labels are re-derived from deposited data and never copied from paper claims; the derived-versus-stated disagreement is itself reported.</p>
-<p class="mono">(R, T, C) → (H1, H2) → P → Y<sub>T</sub> → Label</p>
-
-<h2>3 · Benchmark Units</h2>
-<p class="mono">(TF, target gene, mechanism, context, perturbation, post-perturbation expression response)</p>
-<p>每单元附审计字段:响应方向与效应量、decision rule、binding filter、confidence tier、accession(GEO/ENCODE)、quarantine 标记。数据仅取自同行评审期刊与公开存档;单元按 (TF, target, context, perturbation) 去重;争议案例单列隔离。</p>
-
-<h2>4 · Evaluation — 三层协议</h2>
-<table>
-<tr><th style="width:22%">层</th><th style="width:36%">任务</th><th>现状</th></tr>
-<tr><td>Layer 1 · Classification</td><td>X → {M1, M2, M3, M4}:预测边所属机制类别</td><td><b>当前实现 M1/M2 诊断轴</b>(direct vs chromatin):587 official 单元、冻结 folds、25 baselines、最佳 RF 0.759。M3/M4 类别单元在构建中——当前不得宣称为完整四分类基准。</td></tr>
-<tr><td>Layer 2 · Counterfactual</td><td>给定 (R→T, mechanism, P, context),预测 Y<sub>T</sub> ∈ {UP, DOWN, NO_CHANGE};以独立 deposited 实验验证</td><td>G4/TMPyP4 路线 22 候选、12 单元过行级审查(1 h 对 30 min 窗口差异已披露);official gate 未开</td></tr>
-<tr><td>Layer 3 · OOD generalization</td><td><b>Context-OOD</b>:换细胞系、机制不变;<b>Edge-OOD</b>:换 TF–gene 对、机制不变</td><td>Context-OOD candidate:NKX2-1 双细胞系 27 稳定 + 1 切换;BRD4 HCT116+K562 880(81.5% 稳定)。Edge-OOD:跨因子迁移 median AUROC 0.476</td></tr>
-</table>
-
-<h2 id="results">5 · Results(已验证数字)</h2>
-
-<h3 style="margin:10px 0 4px">5a · Baseline comparison(官方协议:within-regulator out-of-fold,macro-F1,全部实测)</h3>
-<table>
-<tr><th>Model</th><th class="n">macro-F1</th><th>suite</th></tr>
-<tr><td>Majority class(平凡下界)</td><td class="n">0.403</td><td>v0.2 reference</td></tr>
-<tr><td>Random(平凡基线)</td><td class="n">0.514</td><td>v0.2 reference</td></tr>
-<tr><td>GlobalLogReg(pooled)</td><td class="n">0.458</td><td>v0.2 reference</td></tr>
-<tr><td>GlobalExtraTrees / GlobalMLP(pooled)</td><td class="n">0.505 / 0.507</td><td>v0.3 modern</td></tr>
-<tr><td>GlobalRBF_SVM(pooled)</td><td class="n">0.533</td><td>v0.3 modern</td></tr>
-<tr><td>GlobalHistGradientBoosting(pooled)</td><td class="n">0.577</td><td>v0.3 modern</td></tr>
-<tr><td>GlobalLightGBM / GlobalRandomForest(pooled)</td><td class="n">0.595 / 0.594</td><td>v0.3 modern</td></tr>
-<tr><td>GlobalXGBoost(最佳 pooled transfer)</td><td class="n">0.621</td><td>v0.3 modern</td></tr>
-<tr><td>XGBoost / KNN</td><td class="n">0.633 / 0.639</td><td>v0.3 modern</td></tr>
-<tr><td>HistGradientBoosting / DecisionTree</td><td class="n">0.656 / 0.679</td><td>v0.3 modern</td></tr>
-<tr><td>AdaBoost / GaussianNB</td><td class="n">0.696 / 0.710</td><td>v0.3 modern</td></tr>
-<tr><td>LightGBM / RBF_SVM / GaussianProcess</td><td class="n">0.712 / 0.721 / 0.727</td><td>v0.3 modern</td></tr>
-<tr><td>ExtraTrees</td><td class="n">0.734</td><td>v0.3 modern</td></tr>
-<tr><td>LogReg(v0.2) / MLP</td><td class="n">0.745 / 0.746</td><td>reference / modern</td></tr>
-<tr><td><b>RandomForest(v0.2 ref)</b></td><td class="n"><b>0.752</b></td><td>v0.2 reference</td></tr>
-<tr><td><b>RandomForest(v0.3,最佳)</b></td><td class="n"><b>0.759</b></td><td>v0.3 modern</td></tr>
-</table>
-<p class="note">读法:任务可学(0.759 ≫ majority 0.403)但未解决(≠1.0);pooled 模型明显低于 within-regulator,与迁移分析(median AUROC 0.476)一致——机制不是因子身份的平凡映射。完整 25 模型列表:<span class="mono">modern_baseline_primary_summary_v0.3.csv</span>。</p>
-
-<h3 style="margin:14px 0 4px">5b · Data at a glance(真实分布)</h3>
-<table>
-<tr><th style="width:30%">维度</th><th>分布</th></tr>
-<tr><td>机制类别(640 GOLD)</td><td>
-<div class="barwrap"><span class="lab" style="width:170px">chromatin_gating(M2)</span><div class="bar" style="width:244px"></div><span class="val">344 · 54%</span></div>
-<div class="barwrap"><span class="lab" style="width:170px">tf_kinetics(M1-axis)</span><div class="bar" style="width:210px;background:var(--mut)"></div><span class="val">296 · 46%</span></div></td></tr>
-<tr><td>按 regulator</td><td>
-<div class="barwrap"><span class="lab" style="width:170px">RUNX1(MCF10A)</span><div class="bar" style="width:227px"></div><span class="val">320</span></div>
-<div class="barwrap"><span class="lab" style="width:170px">ZNF143(HEK293T)</span><div class="bar" style="width:131px"></div><span class="val">184</span></div>
-<div class="barwrap"><span class="lab" style="width:170px">BCL11A(HUDEP-2)</span><div class="bar" style="width:47px"></div><span class="val">66</span></div>
-<div class="barwrap"><span class="lab" style="width:170px">TRPS1(T47D)</span><div class="bar" style="width:38px"></div><span class="val">53(隔离待裁)</span></div>
-<div class="barwrap"><span class="lab" style="width:170px">PAX3-FOXO1(Rh30/Rh4)</span><div class="bar" style="width:12px"></div><span class="val">17</span></div></td></tr>
-<tr><td>Perturbation 方式</td><td>100% 急性蛋白降解(dTAG / AID / AID2)——这是刻意选择:只有急性降解才满足"机制诊断扰动"要求;化学抑制/RNAi 因不可归因直接效应而不入 GOLD</td></tr>
-<tr><td>Assay</td><td>nascent:PRO-seq 为主(P3F 用 Pol2-S2 CUT&RUN 代理,已注明);染色质:ATAC-seq;binding:ChIP/CUT&RUN(因子各异,见 tier)</td></tr>
-<tr><td>扩展池(candidate,不计入)</td><td>MED14 2410/2607 · BRD4(ENCODE)1268/4122 · 组合 3 组 91/55/146 · ncRNA 源 ~10 篇</td></tr>
-</table>
-
-<div class="releaserule" style="border-left-color:var(--bad)">
-<b>Quarantine 声明:</b> TRPS1 的 53 个单元因标签内部矛盾已<b>排除出官方打分集</b>(excluded from official benchmark scoring),待裁决后方可考虑恢复;它们不计入任何 official 数字。ZNF143 的 184 行标签有效,其证据字段经 v0.3 修正表回填(采纳后可重推)。
-</div>
-
-<table>
-<tr><th>项目</th><th class="n">数值</th><th>说明</th></tr>
-<tr><td>Layer 1 · 最佳 baseline(within-regulator RF)</td><td class="n">macro-F1 0.759</td><td>平凡基线 0.40–0.51;任务非平凡且未解决</td></tr>
-<tr><td>逐因子</td><td class="n">0.84 / 0.75 / 0.46–0.62 / ~0.80</td><td>BCL11A / RUNX1 / ZNF143 / PAX3-FOXO1,分开报告</td></tr>
-<tr><td>等贡献敏感性</td><td class="n">0.636 ± 0.077</td><td>每源等量重采样 ×50;headline 不依赖单篇研究</td></tr>
-<tr><td>跨因子迁移</td><td class="n">median AUROC 0.476</td><td>负结果:基线特征不能跨因子平凡读出机制</td></tr>
-<tr><td>标签可重推性</td><td class="n">587 / 587</td><td>v0.3 修正后;ZNF143 交叉列 bug 已回填,TRPS1 53 隔离待裁</td></tr>
-<tr><td>新增强候选轴(M2/M1,统一 ENCODE 体系)</td><td class="n">0.680 / 0.595</td><td>MED14 2410/2607;BRD4 1268/4122;6 h 单细胞系,预备级</td></tr>
-<tr><td>M3 组合单元(已建)</td><td class="n">91 / 55</td><td>CTCF–RAD21 / BRD4–CDK7(BOTH-required,重叠依赖代理)</td></tr>
-</table>
-
-<h2>6 · Review &amp; Audit</h2>
-<p>人工审查站(离线可用,决定本地存储,导出 CSV 经 validator 校验后进入版本化导入;网站不直接修改 benchmark):</p>
+<p class="sub">A benchmark for distinguishing the mechanisms underlying TF–gene regulatory relationships.</p>
+<p style="margin:10px 0 4px">现有基准回答"某个转录因子是否调控某个基因";MechanismBench 回答"这条调控关系通过何种机制运作"。所有标签由公开扰动数据按预注册规则推导,可独立复现,不取自论文结论。</p>
+<p style="margin:12px 0">
+<span class="frozen">v0.2 FROZEN</span>&nbsp;&nbsp;
+当前版本覆盖 <b>M1(M1 direct cis-regulatory)与 M2(chromatin-mediated)两类机制</b>,共 587 个官方单元;M3(组合 TF)与 M4(调控 ncRNA)为扩展方向,数据在建设中。
+</p>
 <p>
-<a href="index.html">进入审查站</a> ·
-<a href="index.html#gold_primary">GOLD 640</a> ·
+<a class="btn" href="unit.html">查看一个完整的基准单元</a>&nbsp;
+<a class="btn ghost" href="index.html">进入证据审查台</a>&nbsp;
+<a class="btn ghost" href="MechanismBench_v0.2_handoff_v2.xlsx" download>下载总表(Excel)</a>
+</p>
+
+<h2>1 · 机制分类</h2>
+<p>调控机制分为四类。每一类由专属的诊断扰动定义;各诊断轴是类别内的具体实现。</p>
+<table>
+<tr><th style="width:22%">类别</th><th style="width:34%">定义</th><th>诊断扰动</th></tr>
+<tr><td>M1 · 直接顺式调控</td><td>TF 直接结合顺式元件,经转录机器或辅因子调控靶基因</td><td>TF 基序编辑或急性 TF 降解</td></tr>
+<tr><td>M2 · 染色质介导调控</td><td>调控效应依赖染色质可及性、核小体重塑或组蛋白修饰</td><td>直接改变染色质状态</td></tr>
+<tr><td>M3 · 组合 TF 调控</td><td>须与另一 TF 互作方能产生调控效应</td><td>分别扰动互作的各 TF</td></tr>
+<tr><td>M4 · 调控 ncRNA 介导</td><td>miRNA、lncRNA 或 eRNA 作为必要中间体</td><td>直接扰动中间 RNA</td></tr>
+</table>
+<p class="note">关于 PRC2:它是机制诊断扰动的经典示意,但 H3K27me3 的更替时间尺度(数天)与急性诊断窗(30 分钟至 6 小时)不兼容,因此不作为当前数据点。这一边界是实验设计的自知,而非遗漏。</p>
+
+<h2>2 · 标签如何产生</h2>
+<div class="pipeline">
+既有调控边 (R → T)<br>
+&nbsp;&nbsp;↓&nbsp;&nbsp;竞争机制假设(假设A / 假设B)<br>
+&nbsp;&nbsp;↓&nbsp;&nbsp;机制诊断扰动<br>
+&nbsp;&nbsp;↓&nbsp;&nbsp;观测靶基因响应方向(UP / DOWN / NO_CHANGE)<br>
+&nbsp;&nbsp;↓&nbsp;&nbsp;预注册决策规则(只看方向,不看幅度)<br>
+&nbsp;&nbsp;↓&nbsp;&nbsp;机制标签(不匹配任一假设时记 INCONCLUSIVE,保留不强行)
+</div>
+<p>标签不抄录论文结论,而是由任何人都可以重放的推导链产生。推导与论文原文不一致的情况本身会被记录并报告。关于"幅度多大算显著"的争议通过只使用方向符号来回避——方向是二元、可复现的。</p>
+
+<h2>3 · 基准单元</h2>
+<p>每个单元是一个完整的可审计证据案例:</p>
+<p class="mono">(TF, 靶基因, 机制, 细胞背景, 扰动, 扰动后表达响应)</p>
+<p>附完整溯源字段:响应方向与效应量、决策规则、结合证据、置信层级、数据 accession(GEO/ENCODE)。数据仅取自同行评审期刊与公开存档;单元按 (TF, target, context, perturbation) 去重;有争议的案例单独隔离,不进入正式集合。<a href="unit.html">一个完整单元的演示在这里。</a></p>
+
+<h2>4 · 评测任务</h2>
+<table>
+<tr><th style="width:24%">层</th><th style="width:36%">任务</th><th>现状</th></tr>
+<tr><td>Layer 1 · 分类</td><td>预测调控边所属的机制类别</td><td>当前实现 M1/M2 诊断轴:587 个官方单元、冻结折、25 个基线模型、最佳 macro-F1 0.759。M3/M4 类别单元在建设中。</td></tr>
+<tr><td>Layer 2 · 反事实</td><td>给定扰动 P,预测靶基因表达变化;以独立实验验证</td><td>G4/TMPyP4 路线 22 个候选、12 个单元通过行级审查;两次扰动的窗口差异(1 小时对 30 分钟)已在数据中披露。</td></tr>
+<tr><td>Layer 3 · 分布外泛化</td><td>换细胞系(context-OOD)或换 TF–基因对(edge-OOD)后,机制判断是否保持</td><td>NKX2-1 双细胞系 27 稳定、1 切换;BRD4 双细胞系 880 对(81.5% 一致)。均为候选,待评审。</td></tr>
+</table>
+
+<h2>5 · 已验证结果</h2>
+<h3>基线对比(官方协议:组内调节因子折外,macro-F1)</h3>
+<table>
+<tr><th>模型</th><th style="width:16%">macro-F1</th><th style="width:22%">版本</th></tr>
+<tr><td>Majority(平凡下界)</td><td class="n">0.403</td><td>v0.2</td></tr>
+<tr><td>Random</td><td class="n">0.514</td><td>v0.2</td></tr>
+<tr><td>GlobalLogReg(池化)</td><td class="n">0.458</td><td>v0.2</td></tr>
+<tr><td>GlobalXGBoost(最佳池化迁移)</td><td class="n">0.621</td><td>v0.3</td></tr>
+<tr><td>XGBoost / LightGBM / GaussianProcess</td><td class="n">0.633 / 0.712 / 0.727</td><td>v0.3</td></tr>
+<tr><td>LogReg / MLP</td><td class="n">0.745 / 0.746</td><td>v0.2 / v0.3</td></tr>
+<tr><td><b>RandomForest(最佳)</b></td><td class="n"><b>0.759</b></td><td>v0.3</td></tr>
+</table>
+<p class="note">任务可学习(0.759 显著高于 majority 的 0.403)但尚未解决。池化模型系统性低于分组模型,与迁移分析一致(跨因子 median AUROC 0.476):机制类别不是调节因子身份的平凡映射。完整 25 模型列表见 <span class="mono">modern_baseline_primary_summary_v0.3.csv</span>。</p>
+
+<h3>数据概貌(640 个 GOLD 单元)</h3>
+<table>
+<tr><th style="width:26%">维度</th><th>分布</th></tr>
+<tr><td>机制类别</td><td>chromatin_gating 344(54%)· tf_kinetics 296(46%)</td></tr>
+<tr><td>调节因子</td><td>RUNX1 320(MCF10A)· ZNF143 184(HEK293T)· BCL11A 66(HUDEP-2)· TRPS1 53(T47D,已隔离)· PAX3-FOXO1 17(Rh30/Rh4)</td></tr>
+<tr><td>扰动方式</td><td>全部为急性蛋白降解(dTAG / AID)。这是刻意选择:只有急性降解满足机制诊断的要求。</td></tr>
+<tr><td>读出</td><td>nascent 转录(PRO-seq 为主)+ ATAC-seq;结合证据因因子而异,见单元层级标注</td></tr>
+</table>
+
+<h3>标签可靠性</h3>
+<p>官方打分集内 587 个标签均可从已发布证据重推。TRPS1 的 53 个单元因证据内部矛盾已<b>排除出官方打分集</b>,待裁决;ZNF143 的 184 行曾存在证据字段错列,已在 v0.3 修正案中回填并验证。三者数字口径:640 为 GOLD 审计池,587 为官方打分集,2,774 为全部九个评审队列的总行数(含候选队列)。</p>
+
+<h2>6 · 评审与治理</h2>
+<p>人工审查在<a href="index.html">证据审查台</a>进行:九个队列、2,774 行,按预注册的独立评审深度组织(如 BRD4 dependent 侧要求两名独立评审)。决定保存在评审者本地浏览器,导出 CSV 后经校验脚本进入版本化导入;网站不直接修改基准。候选数据在通过具名评审与版本化导入之前,不属于官方基准。</p>
+<p>
+<a href="index.html#gold_primary">GOLD 主审</a> ·
 <a href="index.html#layer2_g4">Layer 2 G4</a> ·
 <a href="index.html#layer3_nkx21">Layer 3 NKX2-1</a> ·
 <a href="index.html#coactivator_dependent">BRD4 dependent</a> ·
 <a href="index.html#smarca5_pregate">SMARCA5 pre-gate</a>
 </p>
-<p class="note">9 队列 / 2,774 行,批级独立评审深度已预注册(如 BRD4 dependent 全部双审)。candidate → eligible 须经具名评审与版本化 v0.3 导入;frozen v0.2 永不静默修改。</p>
 
-<h2>7 · Data &amp; Reproducibility</h2>
+<h2>7 · 数据与复现</h2>
 <table>
-<tr><th style="width:30%">项</th><th>说明</th></tr>
-<tr><td>数据来源</td><td>仅同行评审期刊 + 公开存档:<a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE266489" target="_blank">GSE266489/90/91</a>(ZNF143)· <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE183281" target="_blank">GSE183281/93/95</a>(PAX3-FOXO1)· <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE194348" target="_blank">GSE194348 系列</a>(BCL11A)· <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE314312" target="_blank">GSE314312/301</a>(RUNX1)· <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE251772" target="_blank">GSE251772/236175</a>(TRPS1)· <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE111463" target="_blank">GSE111463</a>(MYC/BRD4)· <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE153267" target="_blank">GSE153267</a>(AML1-ETO)· <a href="https://www.encodeproject.org/degron-matrix/?type=Experiment&amp;internal_tags=Degron" target="_blank">ENCODE Degron matrix</a>(HCT116 AID2)</td></tr>
-<tr><td>可复现</td><td>确定性 scorer 重跑冻结 submission:0.759 / 0.752 / 0.621 @ n=587,完整性检查通过;one-command 管线(reproduce.sh)</td></tr>
-<tr><td>文档</td><td>35 源主表(master_paper_inventory_v0.4.csv)· 15 篇全文库(papers/)· 筛选政策与审计包(reports/)</td></tr>
+<tr><th style="width:26%">内容</th><th>来源</th></tr>
+<tr><td>ZNF143</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE266489" target="_blank">GSE266489/90/91</a>(HEK293T,dTAG 30 min)</td></tr>
+<tr><td>PAX3-FOXO1</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE183281" target="_blank">GSE183281/93/95</a>(Rh30,dTAG 2 h)</td></tr>
+<tr><td>BCL11A</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE194348" target="_blank">GSE194348/45/39 + GSE104676</a>(HUDEP-2)</td></tr>
+<tr><td>RUNX1</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE314312" target="_blank">GSE314312 + GSE314301</a>(MCF10A,dTAG 3 h)</td></tr>
+<tr><td>TRPS1</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE251772" target="_blank">GSE251772/236175</a>(T47D)</td></tr>
+<tr><td>MYC / BRD4(K562)</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE111463" target="_blank">GSE111463</a>(SLAM-seq AID)</td></tr>
+<tr><td>AML1-ETO</td><td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE153267" target="_blank">GSE153267</a>(Kasumi-1)</td></tr>
+<tr><td>扩展轴(ENCODE)</td><td><a href="https://www.encodeproject.org/degron-matrix/?type=Experiment&amp;internal_tags=Degron" target="_blank">ENCODE Degron matrix</a>(HCT116 AID2,统一体系)</td></tr>
 </table>
+<p>确定性 scorer 重跑冻结提交可复现全部基线数字(0.759 / 0.752 / 0.621,n = 587,完整性检查通过)。一键复现脚本与 SHA256 校验随 release 提供。</p>
 
 <footer>
-MechanismBench · mechanism-resolved TF–gene regulation benchmark ·
-frozen v0.2 untouched;all extensions are versioned proposals pending named human review ·
-page = release summary;full provenance in repository.
+MechanismBench v0.2(frozen)· v0.3 extensions proposed, pending named human review ·
+overview 页为 release 摘要;完整溯源见仓库(reports/、review_sessions/、data/raw/papers/)。
 </footer>
 
 </div>
