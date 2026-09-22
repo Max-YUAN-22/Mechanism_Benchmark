@@ -1,78 +1,180 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MechanismBench — Manual Review</title>
-<link rel="stylesheet" href="style.css" />
+<title>MechanismBench — Scientific Evidence Adjudication</title>
+<style>
+:root{--ink:#1f2328;--mut:#57606a;--line:#d0d7de;--bg:#f6f8fa;--accent:#0969da;--ok:#1a7f37;--warn:#9a6700;--bad:#cf222e}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;color:var(--ink);margin:0;background:#fff;font-size:14px}
+.wrap{max-width:1120px;margin:0 auto;padding:20px 20px 80px}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;border-bottom:2px solid var(--line);padding-bottom:10px}
+header.top h1{font-size:21px;margin:0}
+header.top .subtitle{color:var(--mut);font-size:13.5px}
+.badge{display:inline-block;padding:2px 9px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.05em}
+.b-frozen{background:#1f2328;color:#fff}.b-official{background:var(--ok);color:#fff}
+.b-cand{background:var(--warn);color:#fff}.b-pregate{background:#8250df;color:#fff}
+.b-gate{background:#0969da;color:#fff}
+.statcards{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+.statcards div{flex:1;min-width:150px;border:1px solid var(--line);border-radius:8px;padding:10px 14px;background:var(--bg)}
+.statcards b{display:block;font-size:20px}
+.statcards span{color:var(--mut);font-size:12px}
+.releaserule{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--bg);border-radius:6px;padding:9px 13px;font-size:13px;margin:12px 0}
+table.qtable{width:100%;border-collapse:collapse;font-size:13.5px}
+table.qtable th,table.qtable td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+table.qtable th{background:var(--bg);font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
+.btn{display:inline-block;padding:6px 14px;border-radius:6px;background:var(--accent);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+.btn.small{padding:4px 10px;font-size:12px}
+.btn:hover{opacity:.9}
+input[type=text],select,textarea{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:5px}
+textarea{width:100%;min-height:56px}
+.panel{margin-top:16px}
+.hidden{display:none!important}
+.card section{border:1px solid var(--line);border-radius:8px;padding:12px 15px;margin:10px 0}
+.card h4{margin:0 0 8px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.hrow{display:flex;gap:10px;flex-wrap:wrap}
+.hbox{flex:1;min-width:240px;border:1px solid var(--line);border-radius:8px;padding:10px 13px;background:var(--bg)}
+.hbox .pred{font-weight:700;font-size:15px;margin-top:4px}
+.derived{border:2px solid var(--ink);border-radius:8px;padding:12px 15px;background:#fff}
+.derived .label{font-size:17px;font-weight:800}
+.match-yes{color:var(--ok);font-weight:700}.match-no{color:var(--bad);font-weight:700}
+label.opt{display:block;padding:6px 8px;border:1px solid var(--line);border-radius:6px;margin:4px 0;cursor:pointer}
+label.opt:hover{background:var(--bg)}
+.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:4px 14px;font-size:13px}
+.navbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
+.progressbar{height:8px;background:var(--bg);border:1px solid var(--line);border-radius:4px;overflow:hidden;flex:1;min-width:160px}
+.progressbar i{display:block;height:100%;background:var(--accent)}
+.muted{color:var(--mut)}
+.right{margin-left:auto}
+details.box{border:1px solid var(--line);border-radius:8px;padding:0 14px;margin:10px 0;background:var(--bg)}
+details.box summary{cursor:pointer;font-weight:600;padding:9px 0}
+a{color:var(--accent)}
+</style>
 </head>
 <body>
-<header>
-  <div class="brand">MechanismBench · Manual Review &nbsp;·&nbsp; <a href="overview.html" style="color:#0969da;font-size:13px">项目总览 Overview</a></div>
-  <div class="who">
-    <label>Reviewer ID
-      <input id="reviewerId" type="text" placeholder="your-name" autocomplete="off" />
-    </label>
-  </div>
+<div class="wrap">
+
+<header class="top">
+  <h1>MechanismBench</h1>
+  <span class="subtitle">Scientific Evidence Adjudication</span>
+  <span class="badge b-frozen">v0.2 FROZEN</span>
+  <span class="right" style="display:flex;gap:8px;align-items:center">
+    <a class="btn ghost small" href="overview.html">项目总览</a>
+    <span title="Decisions are stored in this browser's localStorage only. Nothing is uploaded. Export CSV before switching devices.">🔒 Local-only review</span>
+  </span>
 </header>
 
+<!-- DASHBOARD -->
 <div id="setup" class="panel">
-  <h1>Pick a review queue</h1>
-  <p class="muted">
-    Your decisions are saved in <b>this browser only</b> (localStorage) as you go —
-    close and resume anytime. When done, click <b>Export CSV</b> and send the file
-    back to be merged. Nothing is uploaded automatically.
-  </p>
-  <div id="queueList" class="queue-list"></div>
+  <div class="statcards">
+    <div><b>640</b><span>GOLD units requiring primary audit</span></div>
+    <div><b id="stReviewed">0</b><span>reviewed by you (this browser)</span></div>
+    <div><b>587</b><span>official scored units (v0.2)</span></div>
+    <div><b>0 / 640</b><span>named-human audit recorded</span></div>
+  </div>
+
+  <div class="releaserule">
+    <b>Release rule.</b> <span class="badge b-cand">CANDIDATE</span> data are not part of the official benchmark.
+    Human review produces <b>review records</b>; it does not directly modify the frozen release.
+    Promotion happens only through a versioned import (v0.3) after the required independent review depth.
+  </div>
+
+  <div style="display:flex;gap:10px;align-items:center;margin:12px 0">
+    <b>Reviewer:</b>
+    <input id="reviewerId" type="text" placeholder="your-name" autocomplete="off" style="width:220px" />
+    <span class="muted" style="font-size:12.5px">决定仅存本机 localStorage;导出 CSV 前请勿换设备/清缓存。</span>
+  </div>
+
+  <h3 style="margin:18px 0 6px">Review queues</h3>
+  <table class="qtable">
+    <thead><tr><th>Queue</th><th>Purpose</th><th style="text-align:right">Units</th><th style="text-align:right">Reviewed</th><th>Status</th><th></th></tr></thead>
+    <tbody id="queueList"></tbody>
+  </table>
+
+  <details class="box">
+    <summary>Known issues from AI first-pass review(机审发现的问题标注)</summary>
+    <div id="issuesBox" style="font-size:13.5px"></div>
+  </details>
 </div>
 
+<!-- REVIEW VIEW -->
 <div id="review" class="panel hidden">
-  <div style="background:#fff8c5;border:1px solid #d4a72c;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:13px">
-    Reviewer ID: <input id="reviewerId2" type="text" placeholder="your-name" autocomplete="off" style="margin:0 6px" />
-    <span style="color:#57606a">(保存前必填;与顶部同步)</span>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+    <button class="btn ghost small" id="backBtn">← Dashboard</button>
+    <b id="qTitle"></b>
+    <span id="qBadge" class="badge b-cand"></span>
+    <span class="right"></span>
+    <button class="btn ghost small" id="exportBtn">Export Review Records</button>
   </div>
-  <div class="review-top">
-    <button id="backBtn" class="ghost">&larr; Queues</button>
-    <div class="qmeta">
-      <span id="qTitle" class="qtitle"></span>
-      <span id="progress" class="progress"></span>
-    </div>
-    <div class="review-actions">
-      <button id="exportBtn" class="primary">Export CSV</button>
-    </div>
-  </div>
-  <div id="banner" class="banner"></div>
-
-  <div class="card" id="card">
-    <div class="card-head">
-      <span id="unitId" class="unit-id"></span>
-      <span id="doneTag" class="done-tag hidden">saved</span>
-    </div>
-    <div id="question" class="question"></div>
-    <table id="evidence" class="evidence"></table>
-    <div id="decisionForm" class="decision-form"></div>
-    <div class="nav">
-      <button id="prevBtn" class="ghost">&larr; Prev</button>
-      <button id="skipBtn" class="ghost">Skip</button>
-      <button id="saveNextBtn" class="primary">Save &amp; Next &rarr;</button>
-    </div>
+  <div id="banner" class="muted" style="margin:6px 0 2px;font-size:13px"></div>
+  <div class="navbar">
+    <span id="progress" class="muted" style="font-size:12.5px"></span>
+    <div class="progressbar"><i id="pbar" style="width:0%"></i></div>
   </div>
 
-  <div class="jump">
-    <label>Jump to #<input id="jumpTo" type="number" min="1" /></label>
-    <label>Find ID / target / batch<input id="findText" type="text" autocomplete="off" /></label>
-    <button id="findBtn" class="ghost" type="button">Find</button>
-    <label class="filterOnly"><input id="onlyUndone" type="checkbox" /> only unreviewed</label>
+  <div class="card">
+    <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+      <h3 id="unitId" style="margin:0;font-family:ui-monospace,Menlo,monospace"></h3>
+      <span id="doneTag" class="badge b-official hidden">REVIEWED</span>
+      <span id="edgeName" style="font-weight:700"></span>
+    </div>
+
+    <section><h4>① Why am I reviewing this</h4>
+      <div id="whyText" style="font-size:13.5px"></div>
+      <div id="layerChecks" class="checks" style="margin-top:8px"></div>
+      <div class="note" style="margin-top:6px">Do <b>not</b> use the source paper's stated mechanism as the decision criterion — adjudicate from the deposited evidence below.</div>
+    </section>
+
+    <section><h4>② Regulatory edge</h4>
+      <table class="qtable" id="edgeTable" style="font-size:13px"></table>
+      <div id="dataLinks" style="font-size:13px;margin-top:6px"></div>
+    </section>
+
+    <section><h4>③ Competing mechanistic hypotheses</h4>
+      <div class="hrow" id="hypRow"></div>
+    </section>
+
+    <section><h4>④ Observed evidence</h4>
+      <table class="qtable" id="evidence" style="font-size:13px"></table>
+    </section>
+
+    <section><h4>⑤ Derived decision(数据推出什么)</h4>
+      <div class="derived" id="derivedBox"></div>
+      <div class="note" style="margin-top:5px">Decision rule: preregistered direction-only rule — UP/DOWN/NO_CHANGE,magnitude-agnostic;neither-matching → inconclusive.</div>
+    </section>
+
+    <section><h4>⑥ Evidence integrity</h4>
+      <div class="checks" id="integrityChecks"></div>
+    </section>
+
+    <section><h4>⑦ Risk flags(勾选将写入 reason,便于统计)</h4>
+      <div class="checks" id="riskFlags"></div>
+    </section>
+
+    <section><h4>⑧ Human review decision(人审与机推分开记录)</h4>
+      <div id="decisionForm"></div>
+    </section>
+
+    <details class="box">
+      <summary>Show automated triage ▸(AI first-pass 底稿,默认折叠防锚定)</summary>
+      <div class="note">AI first-pass 记录在仓库 <span class="mono">review_sessions/</span>;本界面不显示其结论,以免锚定你的判断。</div>
+    </details>
+  </div>
+
+  <div class="navbar">
+    <button class="btn ghost" id="prevBtn">← Previous</button>
+    <button class="btn ghost" id="skipBtn">Skip</button>
+    <button class="btn" id="saveNextBtn">Save &amp; Next →</button>
+    <span class="muted">Jump to #</span><input id="jumpTo" type="text" style="width:80px" />
+    <input id="findText" type="text" placeholder="find ID / target / batch" style="width:190px" />
+    <button class="btn ghost small" id="findBtn">Find</button>
+    <label class="muted" style="font-size:12.5px"><input type="checkbox" id="onlyUndone" /> only unreviewed</label>
   </div>
 </div>
 
-<footer class="muted">
-  candidate ≠ eligible · decisions here are authoritative human fields ·
-  assistant fields are guidance only · <a href="REVIEW_GUIDE.md">review guide</a> ·
-  <a href="review_execution_plan_v0.3.csv">execution plan</a>
-</footer>
-
-<script src="queues.js?v=20260922-links"></script>
-<script src="app.js?v=20260922-links"></script>
+</div>
+<script src="queues.js?v=20260922-console"></script>
+<script src="app.js?v=20260922-console"></script>
 </body>
 </html>
