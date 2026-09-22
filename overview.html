@@ -64,6 +64,14 @@ footer{margin-top:44px;color:var(--mut);font-size:12px;border-top:1px solid var(
 <div><b>Integrity</b>No proposed extension modifies v0.2</div>
 </div>
 
+<div class="releaserule" style="border-left-color:var(--warn)">
+<b>数字关系(一次说清):</b>
+<b>640</b> = GOLD audit pool(5 因子全审计池);
+<b>587</b> = official scored units(质量过滤后可打分者;TRPS1 53 已隔离出打分,待裁决);
+<b>2,774</b> = 全部 9 个评审队列总行数(640 GOLD + 50 launch + 22 L2 + 28 L3 + 51 + 1071 + 729 + 76 + 107,含 candidate 队列)。
+三者口径不同,不冲突。
+</div>
+
 <h2 id="contents">0 · Current release contents —— v0.2 里有什么、什么在建设中</h2>
 <p><a class="btn" href="MechanismBench_v0.2_handoff.xlsx" download>⬇ 下载总表 Excel(MechanismBench_v0.2_handoff.xlsx · 13 sheets · 全部队列+判定+文献+问题标注)</a></p>
 
@@ -151,6 +159,50 @@ FM baseline / split 审计<br>
 </table>
 
 <h2 id="results">5 · Results(已验证数字)</h2>
+
+<h3 style="margin:10px 0 4px">5a · Baseline comparison(官方协议:within-regulator out-of-fold,macro-F1,全部实测)</h3>
+<table>
+<tr><th>Model</th><th class="n">macro-F1</th><th>suite</th></tr>
+<tr><td>Majority class(平凡下界)</td><td class="n">0.403</td><td>v0.2 reference</td></tr>
+<tr><td>Random(平凡基线)</td><td class="n">0.514</td><td>v0.2 reference</td></tr>
+<tr><td>GlobalLogReg(pooled)</td><td class="n">0.458</td><td>v0.2 reference</td></tr>
+<tr><td>GlobalExtraTrees / GlobalMLP(pooled)</td><td class="n">0.505 / 0.507</td><td>v0.3 modern</td></tr>
+<tr><td>GlobalRBF_SVM(pooled)</td><td class="n">0.533</td><td>v0.3 modern</td></tr>
+<tr><td>GlobalHistGradientBoosting(pooled)</td><td class="n">0.577</td><td>v0.3 modern</td></tr>
+<tr><td>GlobalLightGBM / GlobalRandomForest(pooled)</td><td class="n">0.595 / 0.594</td><td>v0.3 modern</td></tr>
+<tr><td>GlobalXGBoost(最佳 pooled transfer)</td><td class="n">0.621</td><td>v0.3 modern</td></tr>
+<tr><td>XGBoost / KNN</td><td class="n">0.633 / 0.639</td><td>v0.3 modern</td></tr>
+<tr><td>HistGradientBoosting / DecisionTree</td><td class="n">0.656 / 0.679</td><td>v0.3 modern</td></tr>
+<tr><td>AdaBoost / GaussianNB</td><td class="n">0.696 / 0.710</td><td>v0.3 modern</td></tr>
+<tr><td>LightGBM / RBF_SVM / GaussianProcess</td><td class="n">0.712 / 0.721 / 0.727</td><td>v0.3 modern</td></tr>
+<tr><td>ExtraTrees</td><td class="n">0.734</td><td>v0.3 modern</td></tr>
+<tr><td>LogReg(v0.2) / MLP</td><td class="n">0.745 / 0.746</td><td>reference / modern</td></tr>
+<tr><td><b>RandomForest(v0.2 ref)</b></td><td class="n"><b>0.752</b></td><td>v0.2 reference</td></tr>
+<tr><td><b>RandomForest(v0.3,最佳)</b></td><td class="n"><b>0.759</b></td><td>v0.3 modern</td></tr>
+</table>
+<p class="note">读法:任务可学(0.759 ≫ majority 0.403)但未解决(≠1.0);pooled 模型明显低于 within-regulator,与迁移分析(median AUROC 0.476)一致——机制不是因子身份的平凡映射。完整 25 模型列表:<span class="mono">modern_baseline_primary_summary_v0.3.csv</span>。</p>
+
+<h3 style="margin:14px 0 4px">5b · Data at a glance(真实分布)</h3>
+<table>
+<tr><th style="width:30%">维度</th><th>分布</th></tr>
+<tr><td>机制类别(640 GOLD)</td><td>
+<div class="barwrap"><span class="lab" style="width:170px">chromatin_gating(M2)</span><div class="bar" style="width:244px"></div><span class="val">344 · 54%</span></div>
+<div class="barwrap"><span class="lab" style="width:170px">tf_kinetics(M1-axis)</span><div class="bar" style="width:210px;background:var(--mut)"></div><span class="val">296 · 46%</span></div></td></tr>
+<tr><td>按 regulator</td><td>
+<div class="barwrap"><span class="lab" style="width:170px">RUNX1(MCF10A)</span><div class="bar" style="width:227px"></div><span class="val">320</span></div>
+<div class="barwrap"><span class="lab" style="width:170px">ZNF143(HEK293T)</span><div class="bar" style="width:131px"></div><span class="val">184</span></div>
+<div class="barwrap"><span class="lab" style="width:170px">BCL11A(HUDEP-2)</span><div class="bar" style="width:47px"></div><span class="val">66</span></div>
+<div class="barwrap"><span class="lab" style="width:170px">TRPS1(T47D)</span><div class="bar" style="width:38px"></div><span class="val">53(隔离待裁)</span></div>
+<div class="barwrap"><span class="lab" style="width:170px">PAX3-FOXO1(Rh30/Rh4)</span><div class="bar" style="width:12px"></div><span class="val">17</span></div></td></tr>
+<tr><td>Perturbation 方式</td><td>100% 急性蛋白降解(dTAG / AID / AID2)——这是刻意选择:只有急性降解才满足"机制诊断扰动"要求;化学抑制/RNAi 因不可归因直接效应而不入 GOLD</td></tr>
+<tr><td>Assay</td><td>nascent:PRO-seq 为主(P3F 用 Pol2-S2 CUT&RUN 代理,已注明);染色质:ATAC-seq;binding:ChIP/CUT&RUN(因子各异,见 tier)</td></tr>
+<tr><td>扩展池(candidate,不计入)</td><td>MED14 2410/2607 · BRD4(ENCODE)1268/4122 · 组合 3 组 91/55/146 · ncRNA 源 ~10 篇</td></tr>
+</table>
+
+<div class="releaserule" style="border-left-color:var(--bad)">
+<b>Quarantine 声明:</b> TRPS1 的 53 个单元因标签内部矛盾已<b>排除出官方打分集</b>(excluded from official benchmark scoring),待裁决后方可考虑恢复;它们不计入任何 official 数字。ZNF143 的 184 行标签有效,其证据字段经 v0.3 修正表回填(采纳后可重推)。
+</div>
+
 <table>
 <tr><th>项目</th><th class="n">数值</th><th>说明</th></tr>
 <tr><td>Layer 1 · 最佳 baseline(within-regulator RF)</td><td class="n">macro-F1 0.759</td><td>平凡基线 0.40–0.51;任务非平凡且未解决</td></tr>
