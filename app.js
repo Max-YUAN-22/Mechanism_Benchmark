@@ -13,7 +13,7 @@
     catch (e) { return {}; }
   }
   function saveStore(s) { localStorage.setItem(LSKEY, JSON.stringify(s)); }
-  function reviewerId() { return (document.getElementById("reviewerId").value || "").trim(); }
+  function reviewerId() { var a=(document.getElementById("reviewerId").value||"").trim(); var b=document.getElementById("reviewerId2"); var c=b?(b.value||"").trim():""; return a||c; }
   function decisionsFor(qid) {
     var s = store(); s[qid] = s[qid] || {}; return s[qid];
   }
@@ -243,7 +243,9 @@
     state.onlyUndone = e.target.checked; state.idx = firstIndex(); renderCard();
   };
   var savedName = localStorage.getItem(LSKEY + "_who");
-  if (savedName) document.getElementById("reviewerId").value = savedName;
+  if (savedName) { document.getElementById("reviewerId").value = savedName; var r2=document.getElementById("reviewerId2"); if(r2) r2.value=savedName; }
+  var r2sync=document.getElementById("reviewerId2");
+  if (r2sync) r2sync.addEventListener("input", function(e){ document.getElementById("reviewerId").value=e.target.value; localStorage.setItem(LSKEY+"_who", e.target.value.trim()); });
   document.getElementById("reviewerId").oninput = function (e) {
     localStorage.setItem(LSKEY + "_who", e.target.value.trim());
   };
