@@ -64,6 +64,61 @@ footer{margin-top:44px;color:var(--mut);font-size:12px;border-top:1px solid var(
 <div><b>Integrity</b>No proposed extension modifies v0.2</div>
 </div>
 
+<h2 id="contents">0 · Current release contents —— v0.2 里有什么、什么在建设中</h2>
+
+<div class="qa">
+<div><b>✅ 已冻结、可直接使用</b><br>
+640 GOLD units(587 official 打分集)<br>
+冻结 folds + 确定性 scorer<br>
+25 baselines(最佳 RF macro-F1 0.759)<br>
+587/587 标签可重推(v0.3 修正采纳后)<br>
+预注册判别规则 + unit schema<br>
+Release hashes / SHA256SUMS</div>
+<div><b>🚧 建设中(管线已就位,可认领)</b><br>
+M3 组合 TF(3 组已建:91/55/146)<br>
+M4 调控 ncRNA(源已锁定,单元待建)<br>
+Layer 2 反事实(12 单元候选)<br>
+Layer 3 OOD(NKX2-1 27+1 · BRD4 880)<br>
+新 contexts / 新 perturbation 数据集<br>
+foundation-model baseline</div>
+<div><b>🤝 可认领的方向</b><br>
+Layer 1 标签复核(按 ROP)<br>
+M3 扩组(ENCODE 对 + 文献组)<br>
+M4 eRNA/miRNA 单元化<br>
+FM baseline / split 审计<br>
+第二评审签字</div>
+</div>
+
+<h3 style="margin:16px 0 4px">v0.2 已就绪组件清单</h3>
+<table>
+<tr><th style="width:55%">组件</th><th>仓库位置(mechanism-benchmark,分支 mechanismbench-expansion)</th></tr>
+<tr><td>587 official units(+640 GOLD audit pool)</td><td><span class="mono">data/processed/benchmark_release/gold_labels_v0.2.csv</span></td></tr>
+<tr><td>Unit-level evidence schema + provenance 字段</td><td><span class="mono">gold_labels_v0.2.csv(18 列)</span>;演示见 <a href="unit.html">unit.html</a></td></tr>
+<tr><td>Mechanism ontology(M1–M4)+ 诊断扰动逻辑</td><td><span class="mono">reports/framework_final_for_senior_handoff.md</span></td></tr>
+<tr><td>Preregistered decision rules(方向性;NO_CHANGE 等价准则)</td><td><span class="mono">reports/prediction_specification_*.md</span></td></tr>
+<tr><td>Review / adjudication console(9 队列,首审底稿内置)</td><td><a href="index.html">本站 index.html</a> + <span class="mono">review_sessions/</span></td></tr>
+<tr><td>Deterministic scorer(已复现 0.759/0.752/0.621)</td><td><span class="mono">src/benchmark/score_submission.py</span></td></tr>
+<tr><td>Reproducibility script(reproduce.sh)+ SHA256SUMS</td><td><span class="mono">data/processed/benchmark_release/</span></td></tr>
+<tr><td>41-source literature inventory(含 accession 实测)</td><td><span class="mono">master_paper_inventory_v0.4.csv</span></td></tr>
+<tr><td>15 篇全文库(已归档标注)</td><td><span class="mono">data/raw/papers/ + PAPERS_INDEX.md</span></td></tr>
+<tr><td>Candidate expansion pipeline(Seed→Expand→Screen→Adjudicate)</td><td><span class="mono">reports/four_category_literature_inventory.md</span></td></tr>
+<tr><td>Baseline evaluation(25 模型记分板)</td><td><span class="mono">modern_baseline_primary_summary_v0.3.csv</span></td></tr>
+</table>
+
+<h3 style="margin:16px 0 4px">九问速查</h3>
+<table>
+<tr><th>#</th><th>问题</th><th>答案位置</th></tr>
+<tr><td>1</td><td>形式化了什么问题?</td><td>顶部 What/How 卡 + 第 2 节</td></tr>
+<tr><td>2</td><td>unit 是什么?</td><td>第 3 节 + <a href="unit.html">unit.html</a></td></tr>
+<tr><td>3</td><td>哪些已冻结?</td><td>本节“已冻结”栏</td></tr>
+<tr><td>4</td><td>标签怎么推导?</td><td>第 2 节 + <a href="unit.html?focus=label">label generation</a></td></tr>
+<tr><td>5</td><td>证据在哪?</td><td>各单元 evidence case(审查站)</td></tr>
+<tr><td>6</td><td>审了什么、谁来审?</td><td>第 6 节 + ROP(底部折叠)</td></tr>
+<tr><td>7</td><td>能复现什么?</td><td>第 7 节</td></tr>
+<tr><td>8</td><td>什么没解决?</td><td>“建设中”栏 + Known issues(底部折叠)</td></tr>
+<tr><td>9</td><td>能接着做什么?</td><td>本节“可认领的方向”</td></tr>
+</table>
+
 <h2>1 · Mechanisms — 四类机制分类(顶层 taxonomy)</h2>
 <p>调控机制按以下四类组织(<b>mechanism category</b>)。各诊断轴(axis)是类别内的具体实现,不是独立的一级类别。</p>
 <table>
