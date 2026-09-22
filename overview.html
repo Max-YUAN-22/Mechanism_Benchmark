@@ -95,6 +95,21 @@ pause-release 依赖(CDK7)、乙酰化 writer 耦合(读 H3K27ac)、频率 vs �
 <p class="note"><b>诚实说明 · 为什么 PRC2 是比喻而不是数据点:</b>H3K27me3 这把锁<b>稳定、要几天才褪</b>,不匹配本基准的<b>急性窗口(30min–6h)nascent 读出</b>——急性看 PRC2 靶几乎不动,等几天又全是间接效应。
 所以<b>门锁"机制"已实现</b>(用更快的染色质因子 BRG1/BCL11A/remodeler 代理),但 <b>PRC2 这个"例子"本身抗拒急性框架</b>:它是完美教学比喻、最差数据点。</p>
 </div>
+<h2 style="margin-top:18px">✅ 成果总表(真实数字,一屏看完)</h2>
+<table>
+<tr><th>成果</th><th class="n">规模</th><th class="n">结果/分数</th><th>状态</th></tr>
+<tr><td><b>Layer 1 分类任务</b>(4 因子,冻结 folds + 确定性 scorer)</td><td class="n">587 单元 · 25 baselines</td><td class="n">最佳 RF macro-F1 <b>0.759</b>;平凡基线 0.40–0.51</td><td>完成,可复现(已重跑核验)</td></tr>
+<tr><td>— 每因子分数</td><td class="n">BCL11A 66 · RUNX1 320 · ZNF143 184 · P3F 17</td><td class="n">0.84 / 0.75 / 0.46–0.62 / ~0.80</td><td>逐因子分开报</td></tr>
+<tr><td>— 等贡献敏感性(防单篇主导)</td><td class="n">每源等量 ×50 次</td><td class="n">0.636 ± 0.077(majority 0.543)</td><td>headline 不靠单篇</td></tr>
+<tr><td>— 跨因子迁移(诚实负结果)</td><td class="n">24 组迁移测试</td><td class="n">median AUROC 0.476</td><td>机制≠平凡查表,on-thesis</td></tr>
+<tr><td><b>标签可靠性</b></td><td class="n">640 GOLD</td><td class="n">可重推 <b>587/587</b>(v0.3 修正后);规则压测 403 行数值扰动不翻转</td><td>237 行已修/隔离,待并入</td></tr>
+<tr><td><b>Layer 2 反事实</b>(G4 路线)</td><td class="n">22 候选</td><td class="n">12 eligible / 10 诚实未确认</td><td>候选(正交第二诊断,官方 gate 未开)</td></tr>
+<tr><td><b>Layer 3 跨情境 OOD</b></td><td class="n">NKX2-1 28 + BRD4 双情境 880</td><td class="n">27 stable + 1 真切换(ENTPD3);880 条 81.5% 稳定 / 163 切换</td><td>候选(待第二评审)</td></tr>
+<tr><td><b>机制类别 (1)–(4) 文献覆盖</b></td><td class="n">35 源(11/10/7 组/~10)+ 15 篇全文</td><td class="n">四类各有合格来源与 built 单元</td><td>清单+论文库齐备</td></tr>
+<tr><td><b>已建新机制轴</b>(统一 ENCODE 体系,DESeq2)</td><td class="n">MED14 2410/2607 · BRD4 1268/4122 · 组合 3 组 91+55+146</td><td class="n">0.680 / 0.595(majority 0.34/0.43)</td><td>强候选,待审</td></tr>
+<tr><td><b>多机制多轴读出</b>(nascent+ATAC+接触+H3K27ac)</td><td class="n">5359 边</td><td class="n">4 类可读(转录直接/染色质/looping/乙酰化)</td><td>形态已证,平衡待多组学</td></tr>
+</table>
+<p class="note">诚实边界:全部 ENCODE 新轴为 6h/单细胞系预备级;Layer 2/3 为候选(官方 gate 待第二评审);frozen v0.2 未动。</p>
 <p class="legend">
 <span class="tag t-gold">强/官方</span>已成型可打分
 <span class="tag t-cand">候选</span>有真实数据、待人审
