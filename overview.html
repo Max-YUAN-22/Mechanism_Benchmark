@@ -234,23 +234,23 @@ SMARCA5 双情境 3682 条但 52.6% stable(时间点不匹配 → 噪声,<b>单�
 </table>
 <p class="note">每条 GOLD/候选边的完整 provenance(regulator · target · accession · cell type · perturbation · timepoint · 响应值 · decision rule · tier · binding filter)在审查站每张卡片上都可见。</p>
 
-<h2>⑨ 按队友新 4 类框架整理 · Mapped to the new taxonomy</h2>
-<p class="note">新框架用<b>诊断扰动</b>定义类别。下表严格标注现有资产的<b>「定义匹配 / 诊断扰动匹配」</b>——不夸大:640 GOLD 全是急性 TF 降解,干净落在 (1);(2) 有依赖性证据但扰动不同;(3)(4) 待建。</p>
+<h2>⑨ 机制分类框架(四类)与现有覆盖</h2>
+<p>调控机制分为四类,每类配专属诊断扰动。现有工作按此框架整理如下。</p>
 <table>
-<tr><th>新类别(定义 · 规定扰动)</th><th>定义匹配</th><th>扰动匹配</th><th>现有可用资产</th></tr>
-<tr><td><b>(1) 直接顺式 DNA</b><br><span class="note">TF 直接占位 CRE · 扰动=TF motif 编辑 / 急性 TF 降解</span></td><td>✅</td><td>✅ 完全</td><td><b>640 GOLD 全是急性 TF 降解</b>;kinetics 296 = 最干净的 (1);MED14/CDK7 属 (1) 的 cofactor 侧(辅因子降解,注明)</td></tr>
-<tr><td><b>(2) 染色质介导</b><br><span class="note">依赖 accessibility / 重塑 / 组蛋白·DNA 修饰 · 扰动=直接改染色质状态</span></td><td>✅ 依赖性</td><td>⚠️ 部分</td><td>gating 344 满足依赖性定义,但由 <b>TF 扰动 + 染色质读出</b>得来(非 (2) 扰动);严格贴 (2) 扰动:SMARCA5(重塑)、BRD4 / H3K27ac(修饰)</td></tr>
-<tr><td><b>(3) 组合 TF</b><br><span class="note">需搭档 TF · 扰动=分别扰动互作 TF · 按互作对一组一组</span></td><td>✅</td><td>✅</td><td><span class="tag t-cand">首批已建(3 组)</span> G1 CTCF–RAD21 <b>91</b> + G3 BRD4–CDK7 <b>55</b>(干净)+ G2 CDK7–POLR2A 146(trivial,只取 split);BOTH=重叠依赖代理(严格 epistasis 需双 degron,未 deposited)</td></tr>
-<tr><td><b>(4) 调控 RNA 介导</b><br><span class="note">miRNA / lncRNA / eRNA 作必要中间体 · 扰动=扰动该 RNA</span></td><td>✅</td><td>⚠️ 逐篇核中</td><td><span class="tag t-cand">curation 完成</span> Schaukowitch 2014 = <b>STRONG 单元源</b>(KCl 激活+eRNA 敲降+GRO-seq 三要素齐);Hah 2013 / Li 2022 = PLAUSIBLE;Gorbovytska 2022 = 诚实降级(纯生化)</td></tr>
+<tr><th style="width:16%">类别</th><th style="width:26%">定义</th><th style="width:20%">诊断扰动</th><th>现有覆盖</th></tr>
+<tr><td>(1) 直接顺式 DNA 调控</td><td>TF 直接结合启动子/增强子等顺式元件,经转录机器或辅因子调控靶基因</td><td>TF 基序编辑;急性 TF 降解</td><td>640 GOLD 单元(急性 TF 降解,其中 kinetics 296 最典型);ENCODE 体系 MED14、BRD4 两条强候选轴(macro-F1 0.680 / 0.595)</td></tr>
+<tr><td>(2) 染色质介导调控</td><td>调控效应依赖染色质可及性、核小体重塑或组蛋白/DNA 修饰</td><td>直接改变染色质状态</td><td>gating 344 单元(由 TF 扰动 + 染色质读出建立,扰动口径待统一);SMARCA5 重塑轴、H3K27ac 修饰轴(八因子 accession 已备)</td></tr>
+<tr><td>(3) 组合 TF 调控</td><td>须与另一 TF 互作方能产生调控效应</td><td>分别扰动互作的各 TF</td><td>互作对 7 组(G1–G7);已建 3 组:CTCF–RAD21 91、BRD4–CDK7 55、CDK7–POLR2A 146(后者 overlap 平凡,仅取单侧分解);文献组含 OCT4–SOX2–NANOG、YAP–AP-1/TEAD</td></tr>
+<tr><td>(4) 调控 ncRNA 介导</td><td>miRNA、lncRNA 或 eRNA 作为 TF 与靶基因间的必要中间体</td><td>直接扰动中间 RNA</td><td>期刊源约 10 篇(eRNA:Gorbovytska 2022、PEARL 2021;miRNA 轴:miR-155、miR-34a/p53);单元待建,首取 Gorbovytska(数据已存档 GSE164556)</td></tr>
 </table>
 <table>
-<tr><th>新 Unit / 评测层</th><th>现状</th></tr>
-<tr><td>Unit = (TF, target, mechanism, context, perturbation, response)</td><td>✅ 640 GOLD 字段一一对应,直接可灌</td></tr>
-<tr><td>L1 Classification</td><td>✅ 587 official · 25 baselines · 最佳 macro-F1 0.759</td></tr>
-<tr><td>L2 Counterfactual</td><td>⚠️ 合成 97.8% vs 均值 50% · 真实边 G4 22 候选(eligible 0)</td></tr>
-<tr><td>L3 OOD(换细胞系 / 换 TF-gene pair)</td><td>✅ BRD4 双情境 880(81.5% stable)· 跨因子迁移 AUROC 0.476</td></tr>
+<tr><th style="width:32%">单元与评测层</th><th>现状</th></tr>
+<tr><td>Unit:(TF, 靶基因, 机制, 细胞背景, 扰动, 扰动后表达响应)</td><td>640 GOLD 字段一一对应,可直接映射</td></tr>
+<tr><td>层 1 · 分类</td><td>587 official 单元;25 个基线;最佳 macro-F1 0.759;等贡献敏感性 0.636±0.077</td></tr>
+<tr><td>层 2 · 反事实</td><td>合成实验 97.8% vs 50%;真实边 G4 路线 12 单元(1h 对 30 min 窗口差异已披露)</td></tr>
+<tr><td>层 3 · OOD</td><td>NKX2-1 双细胞系 27 稳定 + 1 切换;BRD4 双情境 880(81.5% 稳定);跨因子迁移 median AUROC 0.476</td></tr>
 </table>
-<p class="note"><b>与队友需对齐 3 点:</b> ①"4 选 1 分类" vs "成对方向诊断";② (2) 是否必须用<b>染色质扰动</b>(决定 344 gating 算不算 (2));③ bursting(频率)并入还是保留。 (3)(4) 已非空白:(3) 3 组首批单元,(4) 1 强源+2 候选。</p>
+<p class="note">口径说明:(2) 类区分"染色质状态扰动(严格)"与"TF 扰动 + 染色质读出(依赖性证据)"并逐单元记录;MED14 与 BRD4 共享"nascent 下降 + 染色质平坦"信号,按扰动因子区分;全部新轴为候选,正式定级需第二评审与版本化导入。</p>
 
 <footer>
 数据快照均来自本仓库真实产物(frozen v0.2 release、ENCODE HCT116-AID2 degron 派生、DESeq2 精化)。
