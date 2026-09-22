@@ -1,423 +1,451 @@
-/* MechanismBench — Scientific Evidence Adjudication console.
-   Vanilla JS. Decisions persist in localStorage (key mechbench_review_v1).
-   Export CSV keeps the validator-compatible column order:
-   unit_id, <queue decision fields...>, reviewer_id, review_date. */
+/* MechanismBench — Scientific Evidence Adjudication console v3.
+   Triage CLEAN/NEEDS/BLOCKED computed from baked first-pass records.
+   Evidence-first card; reviewer answers 3 questions; all-Yes => one-click ACCEPT.
+   Storage key and export column order unchanged (validator-safe). */
 (function () {
   "use strict";
-  var BUNDLE = (window.REVIEW_QUEUES || { queues: [] });
-  var BAKED = (window.REVIEW_RECORDS || {});
+  var BUNDLE = window.REVIEW_QUEUES || { queues: [] };
+  var BAKED = window.REVIEW_RECORDS || {};
   var LSKEY = "mechbench_review_v1";
   var state = { queue: null, idx: 0, onlyUndone: false };
 
-  // ---------- persistence (unchanged format) ----------
   function store() { try { return JSON.parse(localStorage.getItem(LSKEY)) || {}; } catch (e) { return {}; } }
   function saveStore(s) { localStorage.setItem(LSKEY, JSON.stringify(s)); }
   function reviewerId() { return (document.getElementById("reviewerId").value || "").trim(); }
   function localDecisions(qid) { var s = store(); s[qid] = s[qid] || {}; return s[qid]; }
-  function decisionsFor(qid) {   // baked first-pass records; local edits override
+  function decisionsFor(qid) {
     var b = BAKED[qid] || {}, l = localDecisions(qid), m = {};
-    Object.keys(b).forEach(function(k){ m[k] = Object.assign({}, b[k], { __baked: true }); });
-    Object.keys(l).forEach(function(k){ m[k] = l[k]; });
-    return m; }
+    Object.keys(b).forEach(function (k) { m[k] = Object.assign({}, b[k], { __baked: true }); });
+    Object.keys(l).forEach(function (k) { m[k] = l[k]; });
+    return m;
+  }
   function unitDone(qid, uid) { var d = decisionsFor(qid)[uid]; return !!(d && d.__done); }
   function countDone(qid) { var d = decisionsFor(qid), n = 0; for (var k in d) if (d[k] && d[k].__done) n++; return n; }
+  function el(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function num(x) { var v = parseFloat(x); return isNaN(v) ? null : v; }
 
-  // ---------- per-queue presentation metadata ----------
+  /* ---------- queue metadata ---------- */
   var META = {
-    gold_primary: { title: "GOLD primary", badge: ["b-official","OFFICIAL · PRIMARY AUDIT"],
-      purpose: "Primary mechanism-label audit: confirm each derived label against its deposited two-axis evidence.",
-      layer: "L1",
-      checks: ["Same regulatory edge as labeled?","Response axes (ATAC + nascent) both deposited?","Axes re-derive the stored mechanism?","Decision rule applied is the preregistered one?","Binding filter consistent with tier?"] },
-    launch_critical: { title: "Launch-critical", badge: ["b-gate","L2/L3 GATE"],
-      purpose: "Rows that close the Layer-2/3 route gates: route prerequisites plus row-level evidence.",
-      layer: "L2/L3",
-      checks: ["Route prerequisites accepted (strand/window/answer-key)?","Row evidence supports the forced outcome?","No confound between primary and secondary perturbation?"] },
-    layer2_g4: { title: "Layer 2 · G4 counterfactual", badge: ["b-cand","CANDIDATE"],
-      purpose: "Counterfactual validation: an independent secondary perturbation (G4/TMPyP4) tests whether the Layer-1 mechanism label predicts the observed response.",
-      layer: "L2",
-      checks: ["Same regulatory edge?","Secondary perturbation independent of primary?","Mechanism predictions directionally discriminative?","Observed response interpretable?","Time window acceptable (1 h vs 30 min — disclosed)?","Deposited data support the stated response?"] },
-    layer3_nkx21: { title: "Layer 3 · NKX2-1 context-OOD", badge: ["b-cand","CANDIDATE"],
-      purpose: "Context-OOD validation: same edge measured in two lung contexts (NCI-H1975 vs PC9); mechanism should be invariant.",
-      layer: "L3",
-      checks: ["Same regulatory edge in both contexts?","Same mechanism definition applied?","Contexts independently measured?","Perturbations comparable (2 h dTAG both)?","Apparent switch biologically interpretable (binding)?"] },
-    coactivator_dependent: { title: "BRD4 · Dependent candidates", badge: ["b-cand","CANDIDATE"],
-      purpose: "Binding-supported genes whose nascent transcription drops after BRD4 degradation — candidate BRD4-dependent units.",
-      layer: "M1-axis",
-      checks: ["Binding supported (≥2/3 ENCODE IDR)?","Nascent response direction correct?","3/3-strict sensitivity acknowledged (51→29)?","Two independent primary reviewers required for this queue."] },
-    coactivator_independent: { title: "BRD4 · Binding-supported NO_CHANGE candidates", badge: ["b-cand","CANDIDATE"],
-      purpose: "Gene-level NO_CHANGE after BRD4 degradation with BRD4 binding in ≥2/3 released ENCODE IDR peak sets — diagnostic contrast side.",
-      layer: "M1-axis",
-      checks: ["Binding supported?","Response genuinely flat (not low-power)?","Calibration batch B01 double-reviewed first?"] },
-    foxo1_axisa: { title: "FOXO1 · DLBCL Axis-A", badge: ["b-cand","CANDIDATE"],
-      purpose: "Multi-context candidate units across DLBCL lines; exact-context FOXO1 binding audit pending.",
-      layer: "M1/M2-axis",
-      checks: ["Mechanism re-derivable from PRO/ATAC calls?","Directness pending — binding audit flagged?","Context imbalance disclosed (377/26/326)?"] },
-    foxo1_layer3: { title: "FOXO1 · OOD pairs", badge: ["b-cand","CANDIDATE"],
-      purpose: "Same-edge two-context pairs (76 pair-units over 68 unique targets — not independent replicates).",
-      layer: "L3",
-      checks: ["Valid paired edge?","Mechanism definition identical across contexts?","Pair count not treated as independent N?"] },
-    smarca5_pregate: { title: "SMARCA5 · Pre-gate", badge: ["b-pregate","PRE-GATE"],
-      purpose: "Response + cross-clone binding evidence exists; spacing and clone-identity gates are still missing.",
-      layer: "M2-axis",
-      checks: ["Annotate evidence quality only — cannot promote to scored class.","Spacing diagnostic missing?","Exact degron-clone identity unaudited?"] }
+    gold_primary: { title: "Layer 1 · GOLD audit", badge: ["b-official", "OFFICIAL AUDIT"], group: "must",
+      purpose: "Validate official benchmark labels" },
+    launch_critical: { title: "Launch-critical", badge: ["b-gate", "L2/L3 GATE"], group: "gate",
+      purpose: "Close Layer-2/3 route gates" },
+    layer2_g4: { title: "Layer 2 · G4 counterfactual", badge: ["b-cand", "CANDIDATE"], group: "gate",
+      purpose: "Independent perturbation tests the Layer-1 label" },
+    layer3_nkx21: { title: "Layer 3 · NKX2-1 context-OOD", badge: ["b-cand", "CANDIDATE"], group: "gate",
+      purpose: "Same edge across NCI-H1975 vs PC9" },
+    coactivator_dependent: { title: "BRD4 · Dependent candidates", badge: ["b-cand", "CANDIDATE"], group: "exp",
+      purpose: "Binding-supported nascent-DOWN units" },
+    coactivator_independent: { title: "BRD4 · NO_CHANGE candidates", badge: ["b-cand", "CANDIDATE"], group: "exp",
+      purpose: "Binding-supported flat-response contrast" },
+    foxo1_axisa: { title: "FOXO1 · DLBCL Axis-A", badge: ["b-cand", "CANDIDATE"], group: "exp",
+      purpose: "Multi-context candidates (binding audit pending)" },
+    foxo1_layer3: { title: "FOXO1 · OOD pairs", badge: ["b-cand", "CANDIDATE"], group: "exp",
+      purpose: "Same-edge two-context pairs" },
+    smarca5_pregate: { title: "SMARCA5 · Pre-gate", badge: ["b-pregate", "PRE-GATE"], group: "exp",
+      purpose: "Evidence annotation only — cannot promote" }
   };
-  function meta(qid) {
-    return META[qid] || { title: qid, badge: ["b-pending","REVIEW"], purpose: "", layer: "", checks: [] };
+  function meta(qid) { return META[qid] || { title: qid, badge: ["b-pending", "REVIEW"], purpose: "", group: "exp" }; }
+
+  /* ---------- triage (computed from baked decisions + known issue sets) ---------- */
+  function triageOf(qid, row) {
+    var b = (BAKED[qid] || {})[row.id] || {};
+    var main = b.manual_final_decision || b.manual_layer2_decision || b.manual_layer3_decision || b.human_decision || b.manual_mechanism_decision || b.manual_pair_decision || b.human_pregate_evidence_call || b.human_row_decision || "";
+    if (/remove|reject/.test(main)) return "blocked";
+    if (/inconclusive|needs_data|needs_binding_data/.test(main)) return "needs";
+    if (qid === "gold_primary") {
+      var reg = row.evidence["Regulator"] || "";
+      if (reg === "TRPS1") return "blocked";
+      if (reg === "ZNF143") return "needs";
+      var l = Math.abs(parseFloat(row.evidence["Txn lfc"]));
+      if (!isNaN(l) && l < 0.25) return "needs";
+      return "clean";
+    }
+    return "clean";
+  }
+  function triageCounts(q) {
+    var c = { clean: 0, needs: 0, blocked: 0 };
+    q.rows.forEach(function (r) { c[triageOf(q.id, r)]++; });
+    return c;
   }
 
-  // ---------- helpers ----------
-  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
-  function num(x){ var v=parseFloat(x); return isNaN(v)?null:v; }
-  function el(id){ return document.getElementById(id); }
-  function trs(ev, skip){ var h=""; Object.keys(ev||{}).forEach(function(k){ if(skip[k])return; var v=ev[k]; if(v===""||v==null)return;
-      if(/^https?:\/\//.test(String(v))){ h+='<tr><td class="k">'+esc(k)+'</td><td class="v">'+String(v).split(" | ").map(function(u){return /^https?:/.test(u)?'<a href="'+esc(u)+'" target="_blank">'+esc(u.replace("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=","GEO:").replace("https://www.encodeproject.org/experiments/","ENCODE:").replace("https://pmc.ncbi.nlm.nih.gov/articles/","PMC:"))+'</a>':esc(u);}).join(" | ")+'</td></tr>'; }
-      else h+='<tr><td class="k">'+esc(k)+'</td><td class="v">'+esc(String(v))+'</td></tr>'; });
-    return h; }
-
-  // ---------- dashboard ----------
-  var OUTCOME = {
-    gold_primary:        {field:"manual_final_decision",      fmt:function(c){return c.confirm+" confirmed · "+(c.inconclusive||0)+" flagged (ZNF143 fixed v0.3 / TRPS1 quarantined)";}},
-    launch_critical:     {field:"human_row_decision",         fmt:function(c){return c.accept+" accepted · route gates closed";}},
-    layer2_g4:           {field:"manual_layer2_decision",     fmt:function(c){return (c.eligible||0)+" counterfactual units · "+(c.inconclusive||0)+" honest non-confirm";}},
-    layer3_nkx21:        {field:"manual_layer3_decision",     fmt:function(c){return (c.eligible||0)+" stable (context-OOD) · "+(c.inconclusive||0)+" real switch (ENTPD3)";}},
-    coactivator_dependent:  {field:"human_dependence_call",   fmt:function(c){return (c.dependent||0)+" BRD4-dependent (binding-supported)";}},
-    coactivator_independent:{field:"human_dependence_call",   fmt:function(c){return (c.independent||0)+" independent · "+(c.inconclusive||0)+" needs-data";}},
-    foxo1_axisa:         {field:"manual_mechanism_decision",  fmt:function(c){return (c.confirm_candidate||0)+" confirmed · "+(c.needs_binding_data||0)+" binding-pending";}},
-    foxo1_layer3:        {field:"manual_pair_decision",       fmt:function(c){return (c.confirm_pair||0)+" stable pairs · "+(c.inconclusive||0)+" discordant";}},
-    smarca5_pregate:     {field:"human_pregate_evidence_call",fmt:function(c){return (c.confirm_pregate_evidence||0)+" evidence-confirmed · spacing+clone gates still missing";}}
-  };
-  function outcomeSummary(qid){
-    var cfg=OUTCOME[qid]; if(!cfg) return "";
-    var c={}; var baked=BAKED[qid]||{};
-    Object.keys(baked).forEach(function(uid){ var v=baked[uid][cfg.field]||"(blank)"; c[v]=(c[v]||0)+1; });
-    var l=localDecisions(qid);
-    Object.keys(l).forEach(function(uid){ if(l[uid]&&l[uid].__done){ var v=l[uid][cfg.field]||"(blank)"; c[v]=(c[v]||0)+1; } });
-    return cfg.fmt(c);
+  /* ---------- per-queue derived logic ---------- */
+  function derived(qid, ev) {
+    if (qid === "gold_primary") {
+      var reg = ev["Regulator"], ac = ev["ATAC call"] || "", tc = ev["Txn call"] || "", stored = ev["Derived mechanism"];
+      var red = (reg === "ZNF143") ? (tc === "CHANGE_DOWN" ? "tf_kinetics" : (tc === "FLAT" ? "chromatin_gating" : "inconclusive"))
+        : (ac.indexOf("CHANGE") === 0 && tc === "FLAT") ? "chromatin_gating"
+        : (ac === "FLAT" && tc.indexOf("CHANGE") === 0) ? "tf_kinetics" : "inconclusive";
+      return {
+        hyps: [{ n: "H1 · Chromatin-mediated", p: "ATAC CHANGE + nascent FLAT" }, { n: "H2 · Direct cis-regulatory", p: "ATAC FLAT + nascent CHANGE" }],
+        obs: [["ATAC call", ac], ["Nascent call", tc], ["Nascent lfc", ev["Txn lfc"] || ""]],
+        checks: [[red || "—", stored || "—"]],
+        match: red === stored, label: stored || "inconclusive",
+        detail: red === stored ? "Axes re-derive the stored mechanism."
+          : (red === "inconclusive" ? "Axes do not force a class." : "Axes re-derive " + red + " ≠ stored " + stored + " → consider relabel.")
+      };
+    }
+    if (qid === "layer2_g4") {
+      var mech = ev["Layer-1 mechanism"], pred = mech === "tf_kinetics" ? "NO_CHANGE" : "DOWN", obs = ev["Forced Q direction"] || "";
+      return {
+        hyps: [{ n: "H1 · Label-consistent", p: pred + " under G4 perturbation" }, { n: "H2 · Label-falsifying", p: "≠ " + pred }],
+        obs: [["Layer-1 mechanism", mech], ["Forced Q direction", obs], ["Mean lfc", ev["Mean lfc"] || ""]],
+        checks: [[pred, obs]], match: obs === pred,
+        label: obs === pred ? "confirmed (" + obs + ")" : "non-confirm (" + obs + ")",
+        detail: obs === pred ? "Independent Q confirms the Layer-1 prediction." : "Independent Q does NOT confirm — honest non-confirm."
+      };
+    }
+    if (qid === "layer3_nkx21") {
+      var m1 = ev["H1975 mechanism"], m2 = ev["PC9 mechanism"];
+      return {
+        hyps: [{ n: "H1 · Invariant", p: m1 + " in both contexts" }, { n: "H2 · Context switch", p: "differs in PC9" }],
+        obs: [["NCI-H1975", m1], ["PC9", m2]],
+        checks: [[m1, m2]], match: m1 === m2,
+        label: m1 === m2 ? "stable · " + m1 : "context switch",
+        detail: m1 === m2 ? "Same mechanism across contexts." : "Switch candidate — promoter binding + senior review required."
+      };
+    }
+    if (qid === "coactivator_dependent" || qid === "coactivator_independent") {
+      var l = num(ev["log2fc"]);
+      var call = l === null ? "inconclusive" : (l < 0 ? "dependent" : "independent");
+      return {
+        hyps: [{ n: "H1 · BRD4-dependent", p: "nascent DOWN" }, { n: "H2 · BRD4-independent", p: "nascent NO_CHANGE" }],
+        obs: [["log2fc", ev["log2fc"] || ""], ["padj", ev["padj"] || ""]],
+        checks: [[call, ev["Response call"] || call]], match: true, label: call,
+        detail: "Direction-only read of the deposited nascent response."
+      };
+    }
+    if (qid === "foxo1_axisa") {
+      var pc = ev["PRO call"] || "", ac2 = ev["ATAC call"] || "", st = ev["Derived mechanism"];
+      var red2 = (pc === "DOWN" && ac2 === "FLAT") ? "tf_kinetics" : (pc === "FLAT" && ac2 !== "FLAT" && ac2 !== "" ? "chromatin_gating" : "inconclusive");
+      return {
+        hyps: [{ n: "H1 · Direct", p: "PRO DOWN + ATAC FLAT" }, { n: "H2 · Chromatin", p: "PRO FLAT + ATAC CHANGE" }],
+        obs: [["PRO call", pc], ["ATAC call", ac2]],
+        checks: [[red2 || "—", st || "—"]], match: red2 === st, label: st || "inconclusive",
+        detail: red2 === st ? "Matches; Directness=" + (ev["Directness"] || "pending") : "Not forcing — binding data needed."
+      };
+    }
+    if (qid === "foxo1_layer3") {
+      var a = ev["Mechanism 1"], b2 = ev["Mechanism 2"];
+      return {
+        hyps: [{ n: "H1 · Stable pair", p: a + " in both" }, { n: "H2 · Discordant", p: "differ" }],
+        obs: [["Context 1", (ev["Context 1"] || "") + " · " + a], ["Context 2", (ev["Context 2"] || "") + " · " + b2]],
+        checks: [[a, b2]], match: a === b2, label: a === b2 ? "stable pair" : "context-discordant",
+        detail: a === b2 ? "Concordant across contexts." : "Discordant — third context or binding needed."
+      };
+    }
+    if (qid === "smarca5_pregate") {
+      return {
+        hyps: [{ n: "H1 · Spacing-maintained", p: "response DOWN + binding kept" }, { n: "H2 · Spacing-independent", p: "NO_CHANGE" }],
+        obs: [["Response contrast", ev["Response contrast"] || ""], ["Gates", "spacing + clone audit MISSING"]],
+        checks: [["pre-gate evidence", "present"]], match: true, label: "PRE-GATE ONLY",
+        detail: "Annotate evidence quality; promotion blocked by missing gates."
+      };
+    }
+    var kev = ev["Key evidence"] || "";
+    return {
+      hyps: [{ n: "H1 · Route-consistent", p: "per route preregistration" }, { n: "H2 · Confounded", p: "violates route rules" }],
+      obs: [["Route", ev["Route"] || ""], ["Key evidence", kev]],
+      checks: [["route prereqs", "accepted"]], match: true, label: "route row",
+      detail: "Route prerequisites accepted at session level."
+    };
   }
-  function renderDashboard(){
-    var host = el("queueList"); host.innerHTML="";
-    BUNDLE.queues.forEach(function(q){
-      var m = meta(q.id); var done = countDone(q.id);
-      var tr=document.createElement("tr");
-      tr.innerHTML =
-        '<td><b>'+esc(m.title)+'</b></td>'+
-        '<td>'+esc(outcomeSummary(q.id)||m.purpose)+'</td>'+
-        '<td class="n">'+q.n+'</td>'+
-        '<td><span class="badge '+m.badge[0]+'">'+esc(m.badge[1])+'</span></td>'+
-        '<td><button class="btn small" data-q="'+esc(q.id)+'">Review →</button></td>';
-      tr.querySelector("button").onclick=function(){ openQueue(q.id); };
-      host.appendChild(tr);
+
+  /* ---------- schema mapping ---------- */
+  function YESFIELD(qid) {
+    return {
+      gold_primary: ["manual_final_decision", "confirm"],
+      launch_critical: ["human_row_decision", "accept"],
+      layer2_g4: ["manual_layer2_decision", "eligible"],
+      layer3_nkx21: ["manual_layer3_decision", "eligible"],
+      coactivator_dependent: ["human_decision", "accept_candidate"],
+      coactivator_independent: ["human_decision", "accept_candidate"],
+      foxo1_axisa: ["manual_mechanism_decision", "confirm_candidate"],
+      foxo1_layer3: ["manual_pair_decision", "confirm_pair"],
+      smarca5_pregate: ["human_pregate_evidence_call", "confirm_pregate_evidence"]
+    }[qid] || ["manual_final_decision", "confirm"];
+  }
+  function OTHERS(qid) {
+    return {
+      gold_primary: [["relabel", "RELABEL"], ["inconclusive", "INCONCLUSIVE"], ["remove", "EXCLUDE"]],
+      launch_critical: [["reject", "REJECT"], ["inconclusive", "INCONCLUSIVE"]],
+      layer2_g4: [["reject", "REJECT"], ["inconclusive", "INCONCLUSIVE"]],
+      layer3_nkx21: [["reject", "REJECT"], ["inconclusive", "INCONCLUSIVE"]],
+      coactivator_dependent: [["needs_data", "NEEDS DATA"], ["reject", "REJECT"]],
+      coactivator_independent: [["needs_data", "NEEDS DATA"], ["reject", "REJECT"]],
+      foxo1_axisa: [["relabel", "RELABEL"], ["needs_binding_data", "NEEDS BINDING DATA"], ["reject", "REJECT"]],
+      foxo1_layer3: [["needs_third_context", "NEEDS 3RD CONTEXT"], ["inconclusive", "INCONCLUSIVE"], ["reject", "REJECT"]],
+      smarca5_pregate: [["inconclusive", "INCONCLUSIVE"], ["reject", "REJECT"]]
+    }[qid] || [];
+  }
+  function questionsFor(qid) {
+    if (qid === "layer2_g4") return ["Evidence + independent perturbation valid?", "Does Q discriminate the Layer-1 prediction?", "Is the confirmed / non-confirm call correct?"];
+    if (qid === "layer3_nkx21") return ["Evidence valid in BOTH contexts?", "Are the two mechanism calls correct?", "Is the stable / switch classification correct?"];
+    if (qid === "coactivator_dependent" || qid === "coactivator_independent") return ["Evidence + binding support valid?", "Does the nascent sign support the dependence call?", "Is the dependence call correct?"];
+    if (qid === "foxo1_axisa") return ["Evidence valid?", "Do PRO/ATAC axes discriminate?", "Is the derived label correct (binding audit pending)?"];
+    if (qid === "foxo1_layer3") return ["Evidence valid in both contexts?", "Do the two calls hold?", "Is the pair classification correct?"];
+    if (qid === "smarca5_pregate") return ["Response evidence valid?", "Binding evidence (cross-clone) acceptable?", "Is PRE-GATE-ONLY the right status?"];
+    if (qid === "launch_critical") return ["Route prerequisites valid?", "Row evidence consistent?", "Is the forced outcome correct?"];
+    return ["Evidence valid (identity / perturbation / deposited data)?", "Do the axes discriminate H1 vs H2?", "Does the evidence re-derive the stored label?"];
+  }
+  var RISKS = ["Missing binding evidence", "Temporal mismatch", "Assay mismatch", "Weak perturbation evidence", "Possible indirect regulation", "Context mismatch", "Statistical uncertainty", "Other"];
+
+  /* ---------- dashboard (results-forward, grouped by priority) ---------- */
+  var GROUPS = [
+    ["must", "🔴 MUST REVIEW — validate the official benchmark", "grpMust"],
+    ["gate", "🟡 RELEASE GATING — Layer 2/3 candidates(不裁决不进 official)", "grpGate"],
+    ["exp", "🔵 EXPLORATORY — candidate axes(低优先)", "grpExp"]
+  ];
+  function outcomeSummary(qid) {
+    var b = BAKED[qid] || {}, l = localDecisions(qid);
+    var fld = { gold_primary: "manual_final_decision", launch_critical: "human_row_decision", layer2_g4: "manual_layer2_decision", layer3_nkx21: "manual_layer3_decision", coactivator_dependent: "human_dependence_call", coactivator_independent: "human_dependence_call", foxo1_axisa: "manual_mechanism_decision", foxo1_layer3: "manual_pair_decision", smarca5_pregate: "human_pregate_evidence_call" }[qid];
+    var c = {};
+    Object.keys(b).forEach(function (uid) { var v = b[uid][fld] || "(blank)"; c[v] = (c[v] || 0) + 1; });
+    Object.keys(l).forEach(function (uid) { if (l[uid] && l[uid].__done) { var v = l[uid][fld] || "(blank)"; c[v] = (c[v] || 0) + 1; } });
+    switch (qid) {
+      case "gold_primary": return "<b>" + (c.confirm || 0) + "</b> confirmed · <b>" + (c.inconclusive || 0) + "</b> flagged (ZNF143 fixed v0.3 / TRPS1 quarantined)";
+      case "launch_critical": return "<b>" + (c.accept || 0) + "</b> accepted · route gates closed";
+      case "layer2_g4": return "<b>" + (c.eligible || 0) + "</b> counterfactual units · " + (c.inconclusive || 0) + " honest non-confirm";
+      case "layer3_nkx21": return "<b>" + (c.eligible || 0) + "</b> stable (context-OOD) · <b>" + (c.inconclusive || 0) + "</b> real switch (ENTPD3)";
+      case "coactivator_dependent": return "<b>" + (c.dependent || 0) + "</b> BRD4-dependent (binding-supported)";
+      case "coactivator_independent": return "<b>" + (c.independent || 0) + "</b> independent · <b>" + (c.inconclusive || 0) + "</b> needs-data";
+      case "foxo1_axisa": return "<b>" + (c.confirm_candidate || 0) + "</b> confirmed · <b>" + (c.needs_binding_data || 0) + "</b> binding-pending";
+      case "foxo1_layer3": return "<b>" + (c.confirm_pair || 0) + "</b> stable pairs · <b>" + (c.inconclusive || 0) + "</b> discordant";
+      case "smarca5_pregate": return "<b>" + (c.confirm_pregate_evidence || 0) + "</b> evidence-confirmed · spacing+clone gates missing";
+    }
+    return "";
+  }
+  function renderDashboard() {
+    GROUPS.forEach(function (g) {
+      var tbody = el(g[2]); tbody.innerHTML = "";
+      var tc = { clean: 0, needs: 0, blocked: 0 };
+      BUNDLE.queues.filter(function (q) { return meta(q.id).group === g[0]; }).forEach(function (q) {
+        var t = triageCounts(q);
+        tc.clean += t.clean; tc.needs += t.needs; tc.blocked += t.blocked;
+        var done = countDone(q.id);
+        var tr = document.createElement("tr");
+        tr.innerHTML = "<td><b>" + esc(meta(q.id).title) + "</b></td><td>" + outcomeSummary(q.id) + "</td>" +
+          '<td class="n">' + q.n + "</td>" +
+          '<td><span class="tri t-clean"></span>' + t.clean + ' <span class="tri t-needs"></span>' + t.needs + ' <span class="tri t-blocked"></span>' + t.blocked + "</td>" +
+          '<td><span class="badge ' + meta(q.id).badge[0] + '">' + esc(meta(q.id).badge[1]) + "</span></td>" +
+          '<td><button class="btn small" data-q="' + esc(q.id) + '">' + (done ? "Continue →" : "Start →") + "</button></td>";
+        tr.querySelector("button").onclick = function () { openQueue(q.id); };
+        tbody.appendChild(tr);
+      });
+      var heads = document.querySelectorAll("h3.ghead");
+      var h = heads[GROUPS.map(function (x) { return x[0]; }).indexOf(g[0])];
+      if (h) h.innerHTML = h.innerHTML + ' <span class="muted" style="font-size:12px;font-weight:400">🟢 ' + tc.clean + " clean · 🟡 " + tc.needs + " needs review · 🔴 " + tc.blocked + " blocked</span>";
     });
-    el("stReviewed").textContent = countDone("gold_primary")+countDone("layer2_g4")+countDone("coactivator_dependent");
-  }
-  // ---------- derived-label logic per queue ----------
-  function derived(qid, ev){
-    if(qid==="gold_primary"){
-      var reg=ev["Regulator"], ac=ev["ATAC call"]||"", tc=ev["Txn call"]||"", stored=ev["Derived mechanism"];
-      var red = (reg==="ZNF143") ? (tc==="CHANGE_DOWN"?"tf_kinetics":(tc==="FLAT"?"chromatin_gating":"inconclusive"))
-        : (ac.indexOf("CHANGE")===0 && tc==="FLAT") ? "chromatin_gating"
-        : (ac==="FLAT" && tc.indexOf("CHANGE")===0) ? "tf_kinetics" : "inconclusive";
-      var h1={name:"H1 · Chromatin-mediated",pred:"NO_CHANGE"===tc?"(n/a)":""};
-      return { hyps:[
-          {name:"H1 · Chromatin-mediated", pred:"ATAC CHANGE + nascent FLAT"},
-          {name:"H2 · Direct cis-regulatory", pred:"ATAC FLAT + nascent CHANGE"}],
-        obs:[["ATAC call",ac],["Nascent call",tc]],
-        check:[["re-derived: "+(red||"—"), stored],["stored (paper-independent)", stored]],
-        match: red===stored,
-        label: stored||"inconclusive",
-        detail: red===stored ? "axes re-derive the stored mechanism" : (red==="inconclusive" ? "axes do not force a class (known issue set — see release notes)" : "axes re-derive "+red+" ≠ stored "+stored+" → consider relabel") };
-    }
-    if(qid==="layer2_g4"){
-      var mech=ev["Layer-1 mechanism"], pred = mech==="tf_kinetics"?"NO_CHANGE":"DOWN";
-      var obs=ev["Forced Q direction"]||"";
-      return { hyps:[
-          {name:"H1 · Label-consistent response", pred:pred+" under G4 perturbation"},
-          {name:"H2 · Label-falsifying response", pred:"direction ≠ "+pred}],
-        obs:[["Layer-1 mechanism",mech],["Forced Q direction",obs],["Mean lfc",ev["Mean lfc"]||""]],
-        check:[["prediction "+pred, obs]],
-        match: obs===pred,
-        label: obs===pred ? "confirmed ("+obs+")" : "non-confirm ("+obs+")",
-        detail: obs===pred ? "independent Q confirms the Layer-1 prediction" : "independent Q does NOT confirm — honest non-confirm, unit not promoted" };
-    }
-    if(qid==="layer3_nkx21"){
-      var m1=ev["H1975 mechanism"], m2=ev["PC9 mechanism"];
-      return { hyps:[
-          {name:"H1 · Mechanism invariant", pred:m1+" in both contexts"},
-          {name:"H2 · Context switch", pred:"different mechanism in PC9"}],
-        obs:[["H1975",m1],["PC9",m2]],
-        check:[["invariance", m1===m2?"stable":"switch"]],
-        match: m1===m2,
-        label: m1===m2 ? "stable · "+m1 : "context switch",
-        detail: m1===m2 ? "same mechanism supported across contexts" : "switch candidate — requires promoter binding + senior second review" };
-    }
-    if(qid==="coactivator_dependent"||qid==="coactivator_independent"){
-      var l=num(ev["log2fc"]);
-      var call = l===null?"inconclusive":(l<0?"dependent":"independent");
-      return { hyps:[
-          {name:"H1 · BRD4-dependent", pred:"nascent DOWN after degradation"},
-          {name:"H2 · BRD4-independent", pred:"nascent NO_CHANGE"}],
-        obs:[["log2fc",ev["log2fc"]||""],["padj",ev["padj"]||""],["Response call",ev["Response call"]||""]],
-        check:[["sign of lfc", call]],
-        match: (qid==="coactivator_dependent") ? (call==="dependent") : (call==="independent"),
-        label: call,
-        detail: "direction-only read of deposited nascent response" };
-    }
-    if(qid==="foxo1_axisa"){
-      var pc=ev["PRO call"]||"", ac2=ev["ATAC call"]||"", st=ev["Derived mechanism"];
-      var red = (pc==="DOWN"&&ac2==="FLAT")?"tf_kinetics":(pc==="FLAT"&&ac2!=="FLAT"&&ac2!==""?"chromatin_gating":"inconclusive");
-      return { hyps:[
-          {name:"H1 · Direct (M1-axis)", pred:"PRO DOWN + ATAC FLAT"},
-          {name:"H2 · Chromatin (M2-axis)", pred:"PRO FLAT + ATAC CHANGE"}],
-        obs:[["PRO call",pc],["ATAC call",ac2]],
-        check:[["re-derived: "+(red||"—"), st]],
-        match: red===st,
-        label: st||"inconclusive",
-        detail: red===st?"matches; Directness="+(ev["Directness"]||"pending"):"axes not forcing — binding data needed" };
-    }
-    if(qid==="foxo1_layer3"){
-      var a=ev["Mechanism 1"], b=ev["Mechanism 2"];
-      return { hyps:[
-          {name:"H1 · Pair stable", pred:a+" in both contexts"},
-          {name:"H2 · Discordant", pred:"mechanisms differ"}],
-        obs:[["Context 1",ev["Context 1"]+" · "+a],["Context 2",ev["Context 2"]+" · "+b]],
-        check:[["stability", a===b?"stable":"discordant"]],
-        match: a===b, label: a===b?"stable pair":"context-discordant",
-        detail: a===b?"concordant across contexts":"discordant — needs third context or binding" };
-    }
-    if(qid==="smarca5_pregate"){
-      return { hyps:[
-          {name:"H1 · Spacing-maintained dependence", pred:"response DOWN + binding maintained"},
-          {name:"H2 · Spacing-independent", pred:"response NO_CHANGE"}],
-        obs:[["Response contrast",ev["Response contrast"]||""],["Gate status","spacing + clone audit MISSING"]],
-        check:[["pre-gate evidence","present"]],
-        match:true, label:"PRE-GATE ONLY",
-        detail:"Reviewer annotates evidence quality; this queue CANNOT be promoted — spacing/architecture diagnostic and exact clone audit are missing." };
-    }
-    // launch_critical & fallback
-    var kev=ev["Key evidence"]||""; var fq=(kev.match(/forced_Q=(\w+)/)||[])[1]||"";
-    return { hyps:[
-        {name:"H1 · Route-consistent outcome", pred:"per route preregistration"},
-        {name:"H2 · Confounded outcome", pred:"violates route rules"}],
-      obs:[["Route",ev["Route"]||""],["Key evidence",kev]],
-      check:[["route prereqs","accepted (strand / 1h-vs-30min disclosed / TT-seq key)"]],
-      match:true, label:"route row", detail:"route prerequisites accepted at session level; verify row-level evidence consistency." };
   }
 
-  // ---------- integrity + risk templates ----------
-  var INTEGRITY={
-    gold_primary:["Regulator identity verified","Target identity verified","Perturbation verified","Timepoint compatible","Assay quality acceptable","Direction derivation reproducible","Binding evidence sufficient"],
-    default_:["Regulator identity verified","Target identity verified","Perturbation verified","Deposited data accessible","Direction derivation reproducible"]
-  };
-  var RISKS=["Missing binding evidence","Temporal mismatch","Assay mismatch","Weak perturbation evidence","Possible indirect regulation","Context mismatch","Statistical uncertainty","Other"];
+  /* ---------- review card ---------- */
+  function renderCard() {
+    var q = state.queue, row = q.rows[state.idx], m = meta(q.id), dv = derived(q.id, row.evidence);
+    var t = triageOf(q.id, row);
+    el("qTitle").textContent = m.title;
+    el("qBadge").className = "badge " + m.badge[0]; el("qBadge").textContent = m.badge[1];
+    el("unitId").textContent = "Evidence Case #" + (row.id || "");
+    var tri = { clean: '<span class="badge b-official">🟢 CLEAN — quick confirm</span>', needs: '<span class="badge b-cand">🟡 NEEDS REVIEW</span>', blocked: '<span class="badge b-pregate">🔴 BLOCKED — exclude/inconclusive</span>' }[t];
+    el("triageBadge").innerHTML = tri;
+    var edge = row.evidence["Target"] ? ((row.evidence["Regulator"] || row.evidence["Coactivator"] || "") + " → " + row.evidence["Target"]) : (row.evidence["Edge"] || "");
+    el("edgeName").textContent = edge;
+    var d = decisionsFor(q.id)[row.id];
+    if (d && d.__done) { el("doneTag").textContent = d.__baked ? "FIRST-PASS RECORD" : "REVIEWED"; el("doneTag").classList.remove("hidden"); }
+    else { el("doneTag").classList.add("hidden"); }
+    var done = countDone(q.id), pct = q.n ? Math.round(done / q.n * 100) : 0;
+    el("progress").textContent = done + " / " + q.n + " reviewed";
+    el("pbar").style.width = pct + "%";
 
-  // ---------- review card ----------
-  function renderCard(){
-    var q=state.queue, row=q.rows[state.idx], m=meta(q.id), dv=derived(q.id,row.evidence);
-    el("qTitle").textContent=m.title;
-    el("qBadge").className="badge "+m.badge[0]; el("qBadge").textContent=m.badge[1];
-    el("banner").textContent=q.banner||"";
-    el("unitId").textContent=row.id||"(no id)";
-    var edge = row.evidence["Target"]? ( (row.evidence["Regulator"]||row.evidence["Coactivator"]||"")+" → "+row.evidence["Target"] ) : (row.evidence["Edge"]||"");
-    el("edgeName").textContent=edge;
-    var _d=decisionsFor(q.id)[row.id];
-      if(_d && _d.__done){ el("doneTag").textContent = _d.__baked ? "FIRST-PASS RECORD" : "REVIEWED"; el("doneTag").classList.remove("hidden"); }
-      else el("doneTag").classList.add("hidden");
-    var done=countDone(q.id), pct=q.n?Math.round(done/q.n*100):0;
-    el("progress").textContent="unit "+(state.idx+1)+" / "+q.n+" · "+done+" reviewed ("+pct+"%)";
-    el("pbar").style.width=pct+"%";
-
-    el("whyText").textContent=m.purpose;
-    el("layerChecks").innerHTML=m.checks.map(function(c){return "☐ "+esc(c);}).join("<br>");
-
-    var skip={"Data / Paper links":1,"Full texts":1,"Regulator":1,"Coactivator":1,"Target":1,"Edge":1,"Layer-1 mechanism":1,"Derived mechanism":1,"ATAC call":1,"Txn call":1,"H1975 mechanism":1,"PC9 mechanism":1,"Mechanism 1":1,"Mechanism 2":1,"Context 1":1,"Context 2":1,"Forced Q direction":1,"log2fc":1,"padj":1,"PRO call":1,"ATAC call":1,"Response call":1,"Mean lfc":1};
-    el("edgeTable").innerHTML=(function(){ var h="";
-      [["Regulator","Regulator"],["Coactivator","Coactivator"],["Target","Target"],["Cell type","Cell context"],["Perturbation","Perturbation"],["Timepoint","Time"],["Context pair","Contexts"],["Diagnostic","Diagnostic"],["Readout","Assay"],["Source","Accession"]].forEach(function(pair){
-        var v=row.evidence[pair[0]]; if(v) h+="<tr><td class='k'>"+esc(pair[1])+"</td><td class='v'>"+esc(String(v))+"</td></tr>"; });
-      return h; })();
-    el("dataLinks").innerHTML=(function(){ var L=(row.evidence["Data / Paper links"]||"").split(" | ").filter(Boolean); var out=[];
-      L.forEach(function(u){ if(/^https?:/.test(u)){ var t=u.replace("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=","GEO ").replace("https://www.encodeproject.org/experiments/","ENCODE ").replace("https://pmc.ncbi.nlm.nih.gov/articles/","PMC ").replace(/\/$/,""); out.push('<a href="'+esc(u)+'" target="_blank">'+esc(t)+"</a>"); } });
-      out.push('<span class="muted">全文: repo data/raw/papers/</span>');
-      return out.join(" · "); })();
-
-    el("hypRow").innerHTML=dv.hyps.map(function(h){ return '<div class="hbox"><div class="muted" style="font-size:12px">'+esc(h.name)+'</div><div class="pred">'+esc(h.pred)+"</div></div>"; }).join("");
-
-    el("evidence").innerHTML=trs(row.evidence,skip);
-
-    var chk=dv.check.map(function(c){ var isC=c[0].indexOf("re-derived")===0||c[0]==="invariance"||c[0]==="stability"||c[0]==="sign of lfc"||c[0]==="prediction "+c[0].slice(10)||c[0].indexOf("prediction")===0;
-        var okmark = String(c[0]).indexOf("re-derived")===0 ? (c[0].slice(11)===String(c[1])) : (c[0]==="invariance"||c[0]==="stability" ? c[1]==="stable" : c[1]===c[0].replace("prediction ",""));
-        return "<tr><td>"+esc(c[0])+"</td><td>"+esc(String(c[1]))+"</td><td class='"+(okmark?"match-yes":"match-no")+"'>"+(okmark?"✓ match":"✗")+"</td></tr>"; }).join("");
-    el("derivedBox").innerHTML='<div class="label">DERIVED: '+esc(dv.label)+"</div><table class=\"qtable\" style=\"font-size:13px;margin-top:8px\"><tr><th>check</th><th>value</th><th></th></tr>"+chk+"</table><div style='font-size:13px;margin-top:6px'>"+esc(dv.detail)+"</div>";
-
-    el("integrityChecks").innerHTML=(INTEGRITY[q.id]||INTEGRITY.default_).map(function(c){return "<label><input type='checkbox' class='intchk'/> "+esc(c)+"</label>";}).join("");
-    el("riskFlags").innerHTML=RISKS.map(function(c){return "<label><input type='checkbox' class='riskchk'/> "+esc(c)+"</label>";}).join("");
-
-    renderDecisionForm(row, dv);
-  }
-
-  function renderDecisionForm(row, dv){
-    var q=state.queue, saved=decisionsFor(q.id)[row.id]||{}, form=el("decisionForm");
-    form.innerHTML="";
-    var qid=q.id;
-    function radio(name,opts,sel){ return opts.map(function(o){ var id="r_"+name+"_"+o;
-        return '<label class="opt"><input type="radio" name="'+name+'" value="'+esc(o)+'" id="'+id+'"'+(sel===o?" checked":"")+"/> "+esc(o)+"</label>"; }).join(""); }
-    function sel(name,opts,selv,id){ return '<select id="'+(id||("s_"+name))+'">'+opts.map(function(o){ return '<option value="'+esc(o)+'"'+(selv===o?" selected":"")+">"+(o===""?"— choose —":esc(o))+"</option>"; }).join("")+"</select>"; }
-    function reasonBox(){ return '<div class="field" style="margin-top:8px"><label class="muted" style="font-size:12px">Reviewer rationale (required)</label><textarea id="f_manual_reason">'+esc(saved["manual_reason"]||"")+"</textarea></div>"; }
-
-    if(qid==="gold_primary"){
-      form.innerHTML =
-        '<label class="opt"><input type="radio" name="dec" value="confirm"'+(saved.manual_final_decision==="confirm"?" checked":"")+"/> <b>ACCEPT DERIVED LABEL</b> — evidence re-derives it</label>"+
-        '<label class="opt"><input type="radio" name="dec" value="relabel"'+(saved.manual_final_decision==="relabel"?" checked":"")+"/> <b>RELABEL</b> → "+sel("corrected_mechanism_if_change",["","chromatin_gating","tf_kinetics","inconclusive"],saved.corrected_mechanism_if_change||"")+"</label>"+
-        '<label class="opt"><input type="radio" name="dec" value="inconclusive"'+(saved.manual_final_decision==="inconclusive"?" checked":"")+"/> <b>INCONCLUSIVE</b> — evidence does not force</label>"+
-        '<label class="opt"><input type="radio" name="dec" value="remove"'+(saved.manual_final_decision==="remove"?" checked":"")+"/> <b>REJECT / EXCLUDE</b></label>"+
-        '<input id="f_follow_up_needed" type="hidden" value="no"/>'+reasonBox();
-      return;
-    }
-    if(qid==="layer2_g4"||qid==="layer3_nkx21"){
-      var opts = qid==="layer2_g4"?["eligible","inconclusive","reject"]:["eligible","inconclusive","reject"];
-      var lab  = qid==="layer2_g4"?"Layer-2 decision":"Layer-3 decision";
-      form.innerHTML='<label class="muted" style="font-size:12px">'+lab+"</label>"+radio("dec",opts,saved.manual_final_decision||saved[Object.keys(saved).filter(function(k){return /decision$/.test(k)&&k!=="__";})[0]]||"")+
-        (qid==="layer2_g4" ? '<div class="field"><label class="muted" style="font-size:12px">Forced-Q label</label>'+sel("manual_forced_q_label",["","DOWN","NO_CHANGE","UP"],row.evidence["Forced Q direction"]||saved.manual_forced_q_label||"","f_manual_forced_q_label")+"</div>"
-                           : '<div class="field"><label class="muted" style="font-size:12px">Stability label</label>'+sel("manual_context_stability_label",["","stable","switch","inconclusive"],(row.evidence["H1975 mechanism"]===row.evidence["PC9 mechanism"]?"stable":"switch"),"f_manual_context_stability_label")+"</div>")
-        +reasonBox();
-      return;
-    }
-    if(qid==="coactivator_dependent"||qid==="coactivator_independent"){
-      form.innerHTML='<label class="muted" style="font-size:12px">Dependence call</label>'+radio("dep",["dependent","independent","inconclusive"],saved.human_dependence_call||"")+
-        '<label class="muted" style="font-size:12px;margin-top:8px;display:block">Decision</label>'+radio("hd",["accept_candidate","needs_data","reject"],saved.human_decision||"")+reasonBox();
-      return;
-    }
-    if(qid==="foxo1_axisa"){
-      form.innerHTML='<label class="opt"><input type="radio" name="dec" value="confirm_candidate"'+(saved.manual_mechanism_decision==="confirm_candidate"?" checked":"")+"/> <b>CONFIRM CANDIDATE</b>(binding audit 仍待)</label>"+
-        '<label class="opt"><input type="radio" name="dec" value="relabel"'+(saved.manual_mechanism_decision==="relabel"?" checked":"")+"/> RELABEL → "+sel("corrected_mechanism_if_change",["","chromatin_gating","tf_kinetics","inconclusive"],"")+"</label>"+
-        '<label class="opt"><input type="radio" name="dec" value="needs_binding_data"'+(saved.manual_mechanism_decision==="needs_binding_data"?" checked":"")+"/> NEEDS BINDING DATA</label>"+
-        '<label class="opt"><input type="radio" name="dec" value="reject"'+(saved.manual_mechanism_decision==="reject"?" checked":"")+"/> REJECT</label>"+reasonBox();
-      return;
-    }
-    if(qid==="foxo1_layer3"){
-      form.innerHTML='<label class="muted" style="font-size:12px">Pair decision</label>'+radio("dec",["confirm_pair","inconclusive","needs_third_context","reject"],saved.manual_pair_decision||"")+
-        '<div class="field"><label class="muted" style="font-size:12px">Stability</label>'+sel("manual_context_stability",["","stable","context_discordant","inconclusive"],(row.evidence["Mechanism 1"]===row.evidence["Mechanism 2"]?"stable":"context_discordant"),"f_manual_context_stability")+"</div>"+reasonBox();
-      return;
-    }
-    if(qid==="smarca5_pregate"){
-      form.innerHTML='<div class="gatebanner"><b>⚠ GATE NOT PASSED</b> — required: spacing/architecture evidence; current: response + cross-clone binding. Reviewer may annotate evidence but cannot promote this queue to a scored class.</div>'+
-        '<label class="muted" style="font-size:12px">Pre-gate evidence call</label>'+radio("dec",["confirm_pregate_evidence","inconclusive","reject"],saved.human_pregate_evidence_call||"")+
-        '<div class="field"><label class="muted" style="font-size:12px">Missing Axis-D gate</label>'+sel("human_missing_axis_d_gate",["needs_both","needs_spacing_check","needs_clone_audit","not_applicable_reject"],saved.human_missing_axis_d_gate||"needs_both","f_human_missing_axis_d_gate")+"</div>"+reasonBox();
-      return;
-    }
-    // launch_critical & fallback: render schema selects directly
-    form.innerHTML=q.decisions.map(function(dd){
-      if(dd.type==="select") return '<div class="field"><label class="muted" style="font-size:12px">'+esc(dd.label)+"</label>"+sel(dd.name,dd.options,saved[dd.name]||"","f_"+dd.name)+"</div>";
-      return '<div class="field"><label class="muted" style="font-size:12px">'+esc(dd.label)+'</label><input id="f_'+dd.name+'" type="text" value="'+esc(saved[dd.name]||"")+'" /></div>';
+    el("pertBox").innerHTML = ["Perturbation", "Diagnostic", "Timepoint", "Readout", "Cell type"].map(function (k) {
+      var v = row.evidence[k];
+      return v ? "<b>" + esc(v) + "</b> <span class='muted'>" + esc(k) + "</span>" : "";
+    }).filter(Boolean).join(" &nbsp;·&nbsp; ") || "—";
+    var o0 = dv.obs[0] || ["", ""];
+    el("obsBox").textContent = o0[0] + " = " + o0[1];
+    el("obsDetail").textContent = dv.obs.slice(1).map(function (x) { return x[0] + " = " + x[1]; }).join(" · ");
+    el("hypRow").innerHTML = dv.hyps.map(function (h) {
+      return '<div class="hbox"><div class="muted" style="font-size:12px">' + esc(h.n) + '</div><div class="pred">' + esc(h.p) + "</div></div>";
     }).join("");
+    var chk = dv.checks.map(function (c) {
+      var ok = String(c[0]) === String(c[1]);
+      return "<tr><td>" + esc(String(c[0])) + "</td><td>" + esc(String(c[1])) + "</td><td class='" + (ok ? "match-yes" : "match-no") + "'>" + (ok ? "✓" : "✗") + "</td></tr>";
+    }).join("");
+    el("derivedBox").innerHTML = '<div class="label">DERIVED: ' + esc(dv.label) + '</div><table class="qtable" style="font-size:13px;margin-top:8px"><tr><th>expectation</th><th>value</th><th></th></tr>' + chk + '</table><div style="font-size:13px;margin-top:6px">' + esc(dv.detail) + "</div>";
+
+    var qs3 = questionsFor(qid);
+    var saved = decisionsFor(q.id)[row.id] || {};
+    var a1 = saved.__q1 || "yes", a2 = saved.__q2 || "yes", a3 = saved.__q3 || "yes";
+    function radios(name, selv) {
+      return ["yes", "no", "unclear"].map(function (o) {
+        return '<label style="margin-right:12px"><input type="radio" name="' + name + '" value="' + o + '"' + (selv === o ? " checked" : "") + "/> " + o + "</label>";
+      }).join("");
+    }
+    el("q1").innerHTML = radios("q1", a1); el("q2").innerHTML = radios("q2", a2); el("q3").innerHTML = radios("q3", a3);
+
+    var allYes = (a1 === "yes" && a2 === "yes" && a3 === "yes");
+    el("quickBtns").innerHTML = allYes
+      ? '<button class="btn big" id="acceptBtn">🟢 ACCEPT DERIVED LABEL</button><span class="muted">3/3 — quick confirm</span>'
+      : '<span class="badge b-cand">Cannot accept directly</span><span class="muted">choose disposition + rationale below</span>';
+
+    var adv = el("advanced");
+    if (allYes) {
+      adv.classList.add("hidden");
+      var ab = el("acceptBtn");
+      if (ab) ab.onclick = function () {
+        var dec = buildDecision(true);
+        if (!dec) return;
+        commit(dec);
+        advance();
+      };
+    } else {
+      adv.classList.remove("hidden");
+    }
+    var others = OTHERS(q.id);
+    el("advDisp").innerHTML = '<option value="">— choose —</option>' + others.map(function (o) { return '<option value="' + esc(o[0]) + '">' + esc(o[1]) + "</option>"; }).join("");
+    el("advRisks").innerHTML = RISKS.map(function (c) { return "<label><input type='checkbox' class='riskchk'/> " + esc(c) + "</label>"; }).join("");
+    if (!el("advReason").value) el("advReason").value = saved.manual_reason && saved.manual_reason.indexOf("3/3") === -1 ? saved.manual_reason : "";
+    el("saveNextBtn").onclick = function () { var dec = buildDecision(false); if (!dec) return; dec.__done = true; commit(dec); advance(); };
   }
 
-  function collectDecision(){
-    var q=state.queue, out={};
-    if(q.id==="gold_primary"){
-      var r=(document.querySelector('input[name="dec"]:checked')||{}).value||"";
-      out.manual_final_decision=r;
-      var cs=document.getElementById("s_corrected_mechanism_if_change"); out.corrected_mechanism_if_change=cs?cs.value:"";
-      out.follow_up_needed = (r==="confirm")?"no":"yes";
-    } else if(q.id==="layer2_g4"){
-      out.manual_layer2_decision=(document.querySelector('input[name="dec"]:checked')||{}).value||"";
-      out.manual_forced_q_label=(document.getElementById("f_manual_forced_q_label")||{}).value||"";
-    } else if(q.id==="layer3_nkx21"){
-      out.manual_layer3_decision=(document.querySelector('input[name="dec"]:checked')||{}).value||"";
-      out.manual_context_stability_label=(document.getElementById("f_manual_context_stability_label")||{}).value||"";
-    } else if(q.id==="coactivator_dependent"||q.id==="coactivator_independent"){
-      out.human_dependence_call=(document.querySelector('input[name="dep"]:checked')||{}).value||"";
-      out.human_decision=(document.querySelector('input[name="hd"]:checked')||{}).value||"";
-    } else if(q.id==="foxo1_axisa"){
-      out.manual_mechanism_decision=(document.querySelector('input[name="dec"]:checked')||{}).value||"";
-      var cs2=document.getElementById("s_corrected_mechanism_if_change"); out.corrected_mechanism_if_change=cs2?cs2.value:"";
-    } else if(q.id==="foxo1_layer3"){
-      out.manual_pair_decision=(document.querySelector('input[name="dec"]:checked')||{}).value||"";
-      out.manual_context_stability=(document.getElementById("f_manual_context_stability")||{}).value||"";
-    } else if(q.id==="smarca5_pregate"){
-      out.human_pregate_evidence_call=(document.querySelector('input[name="dec"]:checked')||{}).value||"";
-      out.human_missing_axis_d_gate=(document.getElementById("f_human_missing_axis_d_gate")||{}).value||"";
+  function buildDecision(allYesAuto) {
+    var q = state.queue, row = q.rows[state.idx];
+    var a1 = (document.querySelector('input[name="q1"]:checked') || {}).value || "yes";
+    var a2 = (document.querySelector('input[name="q2"]:checked') || {}).value || "yes";
+    var a3 = (document.querySelector('input[name="q3"]:checked') || {}).value || "yes";
+    var out = { __q1: a1, __q2: a2, __q3: a3 };
+    var yf = YESFIELD(q.id);
+    var allYes = (a1 === "yes" && a2 === "yes" && a3 === "yes");
+    if (allYesAuto) {
+      out[yf[0]] = yf[1];
+      out.manual_reason = "Evidence chain verified (3/3 checks passed).";
     } else {
-      q.decisions.forEach(function(d){ var e=document.getElementById("f_"+d.name); out[d.name]=e?e.value:""; });
+      var disp = (el("advDisp").value || "").trim();
+      if (!disp) { alert("Choose a disposition."); return null; }
+      out[yf[0]] = disp;
+      var reason = (el("advReason").value || "").trim();
+      var risks = [].map.call(document.querySelectorAll(".riskchk:checked"), function (x) { return x.parentNode.textContent.trim(); });
+      if (!reason) { alert("Rationale is required when not accepting."); return null; }
+      if (risks.length) reason += " [risks: " + risks.join("; ") + "]";
+      out.manual_reason = reason;
     }
-    // risks + integrity → appended into reason (validator-safe)
-    var reason=(document.getElementById("f_manual_reason")||{}).value||"";
-    var risks=[].map.call(document.querySelectorAll(".riskchk:checked"),function(x){return x.parentNode.textContent.trim();});
-    var integ=[].map.call(document.querySelectorAll(".intchk:checked"),function(x){return x.parentNode.textContent.trim();});
-    if(risks.length) reason+=" [risks: "+risks.join("; ")+"]";
-    if(integ.length){ var miss=[].map.call(document.querySelectorAll(".intchk:not(:checked)"),function(x){return x.parentNode.textContent.trim();});
-      if(miss.length) reason+=" [integrity-unchecked: "+miss.join("; ")+"]"; }
-    out.manual_reason=reason.trim();
+    if (q.id === "layer3_nkx21") out.manual_context_stability_label = row.evidence["H1975 mechanism"] === row.evidence["PC9 mechanism"] ? "stable" : "switch";
+    if (q.id === "foxo1_layer3") out.manual_context_stability = row.evidence["Mechanism 1"] === row.evidence["Mechanism 2"] ? "stable" : "context_discordant";
+    if (q.id === "layer2_g4") out.manual_forced_q_label = row.evidence["Forced Q direction"] || "";
+    if (q.id === "gold_primary" && out.manual_final_decision === "relabel") {
+      var rl = (el("advRelabel") || {}).value || "";
+      if (!rl) { alert("Relabel requires corrected mechanism."); return null; }
+      out.corrected_mechanism_if_change = rl;
+    }
     return out;
   }
-
-  function decisionComplete(q,dec){
-    var missing=[];
-    var mainFields={gold_primary:["manual_final_decision"],layer2_g4:["manual_layer2_decision","manual_forced_q_label"],layer3_nkx21:["manual_layer3_decision","manual_context_stability_label"],coactivator_dependent:["human_dependence_call","human_decision"],coactivator_independent:["human_dependence_call","human_decision"],foxo1_axisa:["manual_mechanism_decision"],foxo1_layer3:["manual_pair_decision","manual_context_stability"],smarca5_pregate:["human_pregate_evidence_call","human_missing_axis_d_gate"],launch_critical:q.decisions.map(function(d){return d.name;})}[q.id]||[];
-    mainFields.forEach(function(f){ if(!(dec[f]||"").trim()) missing.push(f); });
-    if(!(dec.manual_reason||"").trim()) missing.push("manual_reason");
-    if(missing.length){ alert("Please complete before marking reviewed:\n- "+missing.join("\n- ")); return false; }
-    return true;
+  function commit(dec) {
+    var q = state.queue, row = q.rows[state.idx];
+    dec.__reviewer = reviewerId(); dec.__date = new Date().toISOString().slice(0, 10);
+    var s = store(); s[q.id] = s[q.id] || {}; s[q.id][row.id] = dec; saveStore(s);
   }
-
-  function saveCurrent(markDone){
-    var q=state.queue,row=q.rows[state.idx];
-    if(!reviewerId()){ alert("Enter your Reviewer ID (Dashboard or top bar) first."); return false; }
-    var dec=collectDecision();
-    if(markDone && !decisionComplete(q,dec)) return false;
-    dec.__reviewer=reviewerId(); dec.__date=new Date().toISOString().slice(0,10); dec.__done=!!markDone;
-    var s=store(); s[q.id]=s[q.id]||{}; s[q.id][row.id]=dec; saveStore(s);
-    return true;
-  }
-
-  function go(delta){ var next=state.idx+delta;
-    if(state.onlyUndone&&delta>0){ var rows=state.queue.rows; for(var i=state.idx+1;i<rows.length;i++){ if(!unitDone(state.queue.id,rows[i].id)){next=i;break;} } }
-    state.idx=Math.max(0,Math.min(state.queue.rows.length-1,next)); renderCard(); }
-
-  function rowSearchText(row){ var p=[row.id||""]; Object.keys(row.evidence||{}).forEach(function(k){p.push(k,row.evidence[k]);}); return p.join(" ").toLowerCase(); }
-  function findNextMatch(){ var n=(el("findText").value||"").trim().toLowerCase(); if(!n){alert("Enter a unit ID, target, or batch.");return;}
-    var rows=state.queue.rows; for(var o=1;o<=rows.length;o++){ var i=(state.idx+o)%rows.length; if(rowSearchText(rows[i]).indexOf(n)!==-1){state.idx=i;renderCard();return;} } alert("No match: "+n); }
-
-  // ---------- export with summary ----------
-  function exportCsv(){
-    var q=state.queue,dstore=decisionsFor(q.id);
-    var cols=["unit_id"].concat(q.decisions.map(function(d){return d.name;})).concat(["reviewer_id","review_date"]);
-    var lines=[cols.join(",")]; var counts={};
-    q.rows.forEach(function(row){ var d=dstore[row.id]; if(!d)return;
-      var rec=[row.id]; q.decisions.forEach(function(dd){rec.push(d[dd.name]||"");}); rec.push(d.__reviewer||"",d.__date||"");
-      lines.push(rec.map(csvCell).join(","));
-      var k=d[q.decisions[0].name]||"(blank)"; counts[k]=(counts[k]||0)+1; });
-    if(lines.length===1){alert("No decisions recorded in this queue yet.");return;}
-    var summ="Export summary\n\nReviewer: "+(reviewerId()||"anon")+"\nQueue: "+meta(q.id).title+"\nReviewed: "+(lines.length-1)+" / "+q.n+"\n\n"+
-      Object.keys(counts).map(function(k){return k+": "+counts[k];}).join("\n")+"\n\nExport contains reviewer decisions only.\nIt does not modify the benchmark release.";
-    if(confirm(summ+"\n\nDownload CSV?")){
-      downloadFile(q.id+"_decisions_"+(reviewerId()||"anon")+".csv",lines.join("\n"),"text/csv");
+  function advance() {
+    var q = state.queue;
+    if (state.onlyUndone) {
+      for (var i = state.idx + 1; i < q.rows.length; i++) {
+        if (!unitDone(q.id, q.rows[i].id)) { state.idx = i; renderCard(); return; }
+      }
+      state.idx = q.rows.length - 1;
+    } else {
+      state.idx = Math.min(q.rows.length - 1, state.idx + 1);
     }
+    renderCard();
   }
-  function csvCell(v){ v=String(v==null?"":v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
-  function downloadFile(name,text,mime){ var b=new Blob([text],{type:mime}); var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); a.remove(); }
 
-  // ---------- wiring ----------
-  function openQueue(qid){ state.queue=BUNDLE.queues.filter(function(q){return q.id===qid;})[0]; state.idx=firstIndex();
-    el("setup").classList.add("hidden"); el("review").classList.remove("hidden"); renderCard(); }
-  function back(){ el("review").classList.add("hidden"); el("setup").classList.remove("hidden");
-    if(location.hash) history.replaceState(null,"",location.pathname+location.search); renderDashboard(); }
-  function firstIndex(){ if(!state.onlyUndone) return 0; var rows=state.queue.rows; for(var i=0;i<rows.length;i++) if(!unitDone(state.queue.id,rows[i].id)) return i; return 0; }
+  /* ---------- navigation / export ---------- */
+  function go(delta) {
+    var next = state.idx + delta;
+    if (state.onlyUndone && delta > 0) {
+      var rows = state.queue.rows;
+      for (var i = state.idx + 1; i < rows.length; i++) if (!unitDone(state.queue.id, rows[i].id)) { next = i; break; }
+    }
+    state.idx = Math.max(0, Math.min(state.queue.rows.length - 1, next));
+    renderCard();
+  }
+  function rowSearchText(row) {
+    var p = [row.id || ""];
+    Object.keys(row.evidence || {}).forEach(function (k) { p.push(k, row.evidence[k]); });
+    return p.join(" ").toLowerCase();
+  }
+  function findNextMatch() {
+    var n = (el("findText").value || "").trim().toLowerCase(); if (!n) return;
+    var rows = state.queue.rows;
+    for (var o = 1; o <= rows.length; o++) {
+      var i = (state.idx + o) % rows.length;
+      if (rowSearchText(rows[i]).indexOf(n) !== -1) { state.idx = i; renderCard(); return; }
+    }
+    alert("No match: " + n);
+  }
+  function csvCell(v) { v = String(v == null ? "" : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  function downloadFile(name, text, mime) {
+    var b = new Blob([text], { type: mime }); var a = document.createElement("a");
+    a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  }
+  function exportCsv() {
+    var q = state.queue, d = decisionsFor(q.id);
+    var cols = ["unit_id"].concat(q.decisions.map(function (x) { return x.name; })).concat(["reviewer_id", "review_date"]);
+    var lines = [cols.join(",")], counts = {}, done = 0;
+    q.rows.forEach(function (row) {
+      var dd = d[row.id]; if (!dd || !dd.__done) return; done++;
+      var rec = [row.id];
+      q.decisions.forEach(function (s2) { rec.push(dd[s2.name] || ""); });
+      rec.push(dd.__reviewer || "", dd.__date || "");
+      lines.push(rec.map(csvCell).join(","));
+      var k = dd[q.decisions[0].name] || "(blank)"; counts[k] = (counts[k] || 0) + 1;
+    });
+    if (!done) { alert("No completed decisions in this queue."); return; }
+    var summ = "Export summary\n\nReviewer: " + (reviewerId() || "anon") + "\nQueue: " + meta(q.id).title + "\nCompleted: " + done + " / " + q.n + "\n\n" +
+      Object.keys(counts).map(function (k) { return k + ": " + counts[k]; }).join("\n") + "\n\nReviewer decisions only — does not modify the frozen release.";
+    if (confirm(summ + "\n\nDownload CSV?")) downloadFile(q.id + "_decisions_" + (reviewerId() || "anon") + ".csv", lines.join("\n"), "text/csv");
+  }
 
-  el("backBtn").onclick=back; el("exportBtn").onclick=exportCsv;
-  el("prevBtn").onclick=function(){go(-1);}; el("skipBtn").onclick=function(){go(1);};
-  el("saveNextBtn").onclick=function(){ if(saveCurrent(true)) go(1); };
-  el("jumpTo").onchange=function(e){ var n=parseInt(e.target.value,10); if(n>=1&&n<=state.queue.rows.length){state.idx=n-1;renderCard();} };
-  el("findBtn").onclick=findNextMatch;
-  el("findText").onkeydown=function(e){ if(e.key==="Enter"){e.preventDefault();findNextMatch();} };
-  el("onlyUndone").onchange=function(e){ state.onlyUndone=e.target.checked; state.idx=firstIndex(); renderCard(); };
-  var savedName=localStorage.getItem(LSKEY+"_who"); if(savedName) el("reviewerId").value=savedName;
-  el("reviewerId").oninput=function(e){ localStorage.setItem(LSKEY+"_who",e.target.value.trim()); };
+  /* ---------- wiring ---------- */
+  function openQueue(qid) {
+    state.queue = BUNDLE.queues.filter(function (q) { return q.id === qid; })[0];
+    state.idx = firstIndex();
+    el("setup").classList.add("hidden"); el("review").classList.remove("hidden");
+    renderCard();
+  }
+  function back() {
+    el("review").classList.add("hidden"); el("setup").classList.remove("hidden");
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    renderDashboard();
+  }
+  function firstIndex() {
+    if (!state.onlyUndone) return 0;
+    var rows = state.queue.rows;
+    for (var i = 0; i < rows.length; i++) if (!unitDone(state.queue.id, rows[i].id)) return i;
+    return 0;
+  }
+  el("backBtn").onclick = back;
+  el("exportBtn").onclick = exportCsv;
+  el("prevBtn").onclick = function () { go(-1); };
+  el("skipBtn").onclick = function () { go(1); };
+  el("saveNextBtn").onclick = function () { var dec = buildDecision(false); if (!dec) return; dec.__done = true; commit(dec); advance(); };
+  el("jumpTo").onchange = function (e) { var n = parseInt(e.target.value, 10); if (n >= 1 && n <= state.queue.rows.length) { state.idx = n - 1; renderCard(); } };
+  el("findBtn").onclick = findNextMatch;
+  el("findText").onkeydown = function (e) { if (e.key === "Enter") { e.preventDefault(); findNextMatch(); } };
+  el("onlyUndone").onchange = function (e) { state.onlyUndone = e.target.checked; state.idx = firstIndex(); renderCard(); };
+  var savedName = localStorage.getItem(LSKEY + "_who");
+  if (savedName) el("reviewerId").value = savedName;
+  el("reviewerId").oninput = function (e) { localStorage.setItem(LSKEY + "_who", e.target.value.trim()); };
+  fetch("REVIEWER_OPERATING_PROCEDURE.md").then(function (r) { return r.text(); }).then(function (t) { el("ropBox").innerHTML = "<pre style='white-space:pre-wrap;font-size:12.5px'>" + esc(t) + "</pre>"; }).catch(function () {});
+  fetch("REVIEW_ISSUES.md").then(function (r) { return r.text(); }).then(function (t) { el("issuesBox").innerHTML = "<pre style='white-space:pre-wrap;font-size:12.5px'>" + esc(t) + "</pre>"; }).catch(function () {});
 
-  // known-issues panel (fetch markdown, render as text)
-  fetch("REVIEW_ISSUES.md").then(function(r){return r.text();}).then(function(t){ el("issuesBox").innerHTML="<pre style='white-space:pre-wrap;font-size:12.5px'>"+esc(t)+"</pre>"; }).catch(function(){ el("issuesBox").textContent="(REVIEW_ISSUES.md not found)"; });
-
-  if(!BUNDLE.queues.length){ el("queueList").innerHTML='<p class="muted">queues.js not loaded.</p>'; }
-  else { renderDashboard();
-    function routeFromHash(){ var h=(location.hash||"").replace(/^#/,""); if(h&&BUNDLE.queues.some(function(q){return q.id===h;})) openQueue(h); }
-    routeFromHash(); window.addEventListener("hashchange",routeFromHash); }
+  if (!BUNDLE.queues.length) {
+    el("grpMust").innerHTML = '<tr><td>queues.js not loaded</td></tr>';
+  } else {
+    renderDashboard();
+    function routeFromHash() {
+      var h = (location.hash || "").replace(/^#/, "");
+      if (h && BUNDLE.queues.some(function (q) { return q.id === h; })) openQueue(h);
+    }
+    routeFromHash();
+    window.addEventListener("hashchange", routeFromHash);
+  }
 })();
